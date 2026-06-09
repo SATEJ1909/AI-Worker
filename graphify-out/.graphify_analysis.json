@@ -1,0 +1,104 @@
+{
+  "communities": {
+    "0": [
+      "apps_web_postcss_config_mjs",
+      "eslint_config_next_nextjsconfig",
+      "packages_eslint_config_base_js",
+      "packages_eslint_config_next_js",
+      "packages_eslint_config_react_internal_js",
+      "web_postcss_config_config"
+    ],
+    "1": [
+      "app_layout_geistmono",
+      "app_layout_geistsans",
+      "app_layout_metadata",
+      "app_layout_rootlayout",
+      "apps_docs_app_layout_tsx"
+    ],
+    "2": [
+      "app_page_home",
+      "app_page_props",
+      "app_page_themeimage",
+      "apps_docs_app_page_tsx"
+    ],
+    "3": [
+      "packages_ui_src_button_tsx",
+      "src_button_button",
+      "src_button_buttonprops"
+    ],
+    "4": [
+      "packages_ui_src_card_tsx",
+      "src_card_card"
+    ],
+    "5": [
+      "packages_ui_src_code_tsx",
+      "src_code_code"
+    ],
+    "6": [
+      "apps_api_src_index_ts"
+    ],
+    "7": [
+      "apps_docs_eslint_config_js"
+    ],
+    "8": [
+      "apps_web_next_env_d_ts"
+    ],
+    "9": [
+      "apps_web_next_config_ts"
+    ]
+  },
+  "cohesion": {
+    "0": 0.47,
+    "1": 0.4,
+    "2": 0.5,
+    "3": 0.67,
+    "4": 1.0,
+    "5": 1.0,
+    "6": 1.0,
+    "7": 1.0,
+    "8": 1.0,
+    "9": 1.0
+  },
+  "gods": [
+    {
+      "id": "web_postcss_config_config",
+      "label": "config",
+      "degree": 4
+    },
+    {
+      "id": "app_layout_geistsans",
+      "label": "geistSans",
+      "degree": 1
+    },
+    {
+      "id": "app_layout_geistmono",
+      "label": "geistMono",
+      "degree": 1
+    },
+    {
+      "id": "app_layout_metadata",
+      "label": "metadata",
+      "degree": 1
+    },
+    {
+      "id": "app_page_props",
+      "label": "Props",
+      "degree": 1
+    },
+    {
+      "id": "eslint_config_next_nextjsconfig",
+      "label": "nextJsConfig",
+      "degree": 1
+    },
+    {
+      "id": "src_button_buttonprops",
+      "label": "ButtonProps",
+      "degree": 1
+    }
+  ],
+  "surprises": [],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

@@ -1,0 +1,429 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "apps/api/src/index.ts",
+      "source_location": "L1",
+      "id": "apps_api_src_index_ts",
+      "community": 6,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "eslint.config.js",
+      "file_type": "code",
+      "source_file": "apps/docs/eslint.config.js",
+      "source_location": "L1",
+      "id": "apps_docs_eslint_config_js",
+      "community": 7,
+      "norm_label": "eslint.config.js"
+    },
+    {
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "apps/docs/app/layout.tsx",
+      "source_location": "L1",
+      "id": "apps_docs_app_layout_tsx",
+      "community": 1,
+      "norm_label": "layout.tsx"
+    },
+    {
+      "label": "geistSans",
+      "file_type": "code",
+      "source_file": "apps/docs/app/layout.tsx",
+      "source_location": "L5",
+      "id": "app_layout_geistsans",
+      "community": 1,
+      "norm_label": "geistsans"
+    },
+    {
+      "label": "geistMono",
+      "file_type": "code",
+      "source_file": "apps/docs/app/layout.tsx",
+      "source_location": "L9",
+      "id": "app_layout_geistmono",
+      "community": 1,
+      "norm_label": "geistmono"
+    },
+    {
+      "label": "metadata",
+      "file_type": "code",
+      "source_file": "apps/docs/app/layout.tsx",
+      "source_location": "L14",
+      "id": "app_layout_metadata",
+      "community": 1,
+      "norm_label": "metadata"
+    },
+    {
+      "label": "RootLayout()",
+      "file_type": "code",
+      "source_file": "apps/docs/app/layout.tsx",
+      "source_location": "L19",
+      "id": "app_layout_rootlayout",
+      "community": 1,
+      "norm_label": "rootlayout()"
+    },
+    {
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "apps/docs/app/page.tsx",
+      "source_location": "L1",
+      "id": "apps_docs_app_page_tsx",
+      "community": 2,
+      "norm_label": "page.tsx"
+    },
+    {
+      "label": "Props",
+      "file_type": "code",
+      "source_file": "apps/docs/app/page.tsx",
+      "source_location": "L5",
+      "id": "app_page_props",
+      "community": 2,
+      "norm_label": "props"
+    },
+    {
+      "label": "ThemeImage()",
+      "file_type": "code",
+      "source_file": "apps/docs/app/page.tsx",
+      "source_location": "L10",
+      "id": "app_page_themeimage",
+      "community": 2,
+      "norm_label": "themeimage()"
+    },
+    {
+      "label": "Home()",
+      "file_type": "code",
+      "source_file": "apps/docs/app/page.tsx",
+      "source_location": "L21",
+      "id": "app_page_home",
+      "community": 2,
+      "norm_label": "home()"
+    },
+    {
+      "label": "next-env.d.ts",
+      "file_type": "code",
+      "source_file": "apps/web/next-env.d.ts",
+      "source_location": "L1",
+      "id": "apps_web_next_env_d_ts",
+      "community": 8,
+      "norm_label": "next-env.d.ts"
+    },
+    {
+      "label": "next.config.ts",
+      "file_type": "code",
+      "source_file": "apps/web/next.config.ts",
+      "source_location": "L1",
+      "id": "apps_web_next_config_ts",
+      "community": 9,
+      "norm_label": "next.config.ts"
+    },
+    {
+      "label": "postcss.config.mjs",
+      "file_type": "code",
+      "source_file": "apps/web/postcss.config.mjs",
+      "source_location": "L1",
+      "id": "apps_web_postcss_config_mjs",
+      "community": 0,
+      "norm_label": "postcss.config.mjs"
+    },
+    {
+      "label": "config",
+      "file_type": "code",
+      "source_file": "apps/web/postcss.config.mjs",
+      "source_location": "L1",
+      "id": "web_postcss_config_config",
+      "community": 0,
+      "norm_label": "config"
+    },
+    {
+      "label": "base.js",
+      "file_type": "code",
+      "source_file": "packages/eslint-config/base.js",
+      "source_location": "L1",
+      "id": "packages_eslint_config_base_js",
+      "community": 0,
+      "norm_label": "base.js"
+    },
+    {
+      "label": "next.js",
+      "file_type": "code",
+      "source_file": "packages/eslint-config/next.js",
+      "source_location": "L1",
+      "id": "packages_eslint_config_next_js",
+      "community": 0,
+      "norm_label": "next.js"
+    },
+    {
+      "label": "nextJsConfig",
+      "file_type": "code",
+      "source_file": "packages/eslint-config/next.js",
+      "source_location": "L16",
+      "id": "eslint_config_next_nextjsconfig",
+      "community": 0,
+      "norm_label": "nextjsconfig"
+    },
+    {
+      "label": "react-internal.js",
+      "file_type": "code",
+      "source_file": "packages/eslint-config/react-internal.js",
+      "source_location": "L1",
+      "id": "packages_eslint_config_react_internal_js",
+      "community": 0,
+      "norm_label": "react-internal.js"
+    },
+    {
+      "label": "button.tsx",
+      "file_type": "code",
+      "source_file": "packages/ui/src/button.tsx",
+      "source_location": "L1",
+      "id": "packages_ui_src_button_tsx",
+      "community": 3,
+      "norm_label": "button.tsx"
+    },
+    {
+      "label": "ButtonProps",
+      "file_type": "code",
+      "source_file": "packages/ui/src/button.tsx",
+      "source_location": "L5",
+      "id": "src_button_buttonprops",
+      "community": 3,
+      "norm_label": "buttonprops"
+    },
+    {
+      "label": "Button()",
+      "file_type": "code",
+      "source_file": "packages/ui/src/button.tsx",
+      "source_location": "L11",
+      "id": "src_button_button",
+      "community": 3,
+      "norm_label": "button()"
+    },
+    {
+      "label": "card.tsx",
+      "file_type": "code",
+      "source_file": "packages/ui/src/card.tsx",
+      "source_location": "L1",
+      "id": "packages_ui_src_card_tsx",
+      "community": 4,
+      "norm_label": "card.tsx"
+    },
+    {
+      "label": "Card()",
+      "file_type": "code",
+      "source_file": "packages/ui/src/card.tsx",
+      "source_location": "L3",
+      "id": "src_card_card",
+      "community": 4,
+      "norm_label": "card()"
+    },
+    {
+      "label": "code.tsx",
+      "file_type": "code",
+      "source_file": "packages/ui/src/code.tsx",
+      "source_location": "L1",
+      "id": "packages_ui_src_code_tsx",
+      "community": 5,
+      "norm_label": "code.tsx"
+    },
+    {
+      "label": "Code()",
+      "file_type": "code",
+      "source_file": "packages/ui/src/code.tsx",
+      "source_location": "L3",
+      "id": "src_code_code",
+      "community": 5,
+      "norm_label": "code()"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/app/layout.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "apps_docs_app_layout_tsx",
+      "target": "app_layout_geistsans",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/app/layout.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "apps_docs_app_layout_tsx",
+      "target": "app_layout_geistmono",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/app/layout.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "apps_docs_app_layout_tsx",
+      "target": "app_layout_metadata",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/app/layout.tsx",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "apps_docs_app_layout_tsx",
+      "target": "app_layout_rootlayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/docs/app/page.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "apps_docs_app_page_tsx",
+      "target": "app_page_props",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/docs/app/page.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "apps_docs_app_page_tsx",
+      "target": "app_page_themeimage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/app/page.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "apps_docs_app_page_tsx",
+      "target": "app_page_home",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/postcss.config.mjs",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "apps_web_postcss_config_mjs",
+      "target": "web_postcss_config_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/eslint-config/base.js",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "packages_eslint_config_base_js",
+      "target": "web_postcss_config_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/eslint-config/next.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "packages_eslint_config_next_js",
+      "target": "web_postcss_config_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/eslint-config/react-internal.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "packages_eslint_config_react_internal_js",
+      "target": "web_postcss_config_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/eslint-config/next.js",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "packages_eslint_config_next_js",
+      "target": "packages_eslint_config_base_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/eslint-config/react-internal.js",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "packages_eslint_config_react_internal_js",
+      "target": "packages_eslint_config_base_js",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/eslint-config/next.js",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "packages_eslint_config_next_js",
+      "target": "eslint_config_next_nextjsconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/ui/src/button.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "packages_ui_src_button_tsx",
+      "target": "src_button_buttonprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/ui/src/button.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "packages_ui_src_button_tsx",
+      "target": "src_button_button",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/ui/src/card.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "packages_ui_src_card_tsx",
+      "target": "src_card_card",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/ui/src/code.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "packages_ui_src_code_tsx",
+      "target": "src_code_code",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "c715ffadf26a36d19c8fe2b3420f24b9e734f892"
+}
