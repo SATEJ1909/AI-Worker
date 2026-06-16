@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  password  String
+
+  workspaces Workspace[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String   @default("My Workspace")
+
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id])
+
+  integrations Integration[]
+  conversations Conversation[]
+  memories      Memory[]
+
+  createdAt DateTime @default(now())
+ updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Integration {
+  id          String   @id @default(uuid())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  provider    String
+
+  accountEmail String?
+
+  accessToken  String
+  refreshToken String?
+
+  metadata     Json?
+
+  createdAt    DateTime @default(now())
+
+  @@index([workspaceId])
+}
+
+model Conversation {
+  id          String   @id @default(uuid())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  title       String?
+
+  messages      Message[]
+  toolExecutions ToolExecution[]
+
+  createdAt   DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([workspaceId])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role           String
+
+  content        String
+
+  toolCalls      Json?
+
+  createdAt      DateTime @default(now())
+
+  @@index([conversationId])
+}
+
+model ToolExecution {
+  id             String   @id @default(uuid())
+
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+
+  toolName       String
+
+  input          Json?
+  output         Json?
+
+  status         String
+
+  executedAt     DateTime @default(now())
+
+  @@index([toolName])
+}
+
+model Memory {
+  id          String   @id @default(uuid())
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  content     String
+
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+
+  @@index([workspaceId])
+}
