@@ -94,3 +94,21 @@ export const updateWorkspace = async (ownerId: string, workspaceId: string, name
         throw error;
     }
 }
+
+export const deleteWorkspace = async (ownerId: string, workspaceId: string) => {
+    try {
+        const existingWorkspace = await getWorkspaceById(ownerId, workspaceId);
+        if (!existingWorkspace) {
+            throw new Error('Workspace not found');
+        }
+
+        await prisma.workspace.delete({
+            where: { id: workspaceId },
+        });
+
+        return true;
+    } catch (error) {
+        console.error("Error in deleteWorkspace service:", error);
+        throw error;
+    }
+}

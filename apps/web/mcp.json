@@ -1,0 +1,10 @@
+{
+    "mcpServers": {
+        "stitch": {
+            "command": "npx",
+            "args": [
+                "stitch-mcp"
+            ]
+        }
+    }
+}

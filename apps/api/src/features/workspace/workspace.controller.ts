@@ -1,5 +1,5 @@
 import type { Request, RequestHandler } from 'express'
-import { createWorkspace, getWorkspaceById, getWorkspaces, updateWorkspace } from "./workspace.service.js";
+import { createWorkspace, getWorkspaceById, getWorkspaces, updateWorkspace, deleteWorkspace } from "./workspace.service.js";
 
 const workspaceErrorMessages = new Set([
     'Workspace name is required',
@@ -129,5 +129,37 @@ export const updateWorkspaceHandler: RequestHandler = async (req, res) => {
             success: false,
             message: workspaceErrorMessages.has(message) ? message : 'Something went wrong',
         });
+    }
+}
+
+export const deleteWorkspaceHandler: RequestHandler = async (req, res) => {
+    try {
+        const userId = getAuthenticatedUserId(req);
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        const workspaceId = getWorkspaceId(req);
+        if (!workspaceId) {
+            res.status(400).json({ success: false, message: 'Workspace id is required' });
+            return;
+        }
+
+        await deleteWorkspace(userId, workspaceId);
+
+        res.status(200).json({
+            success: true,
+            message: 'Workspace deleted successfully',
+        });
+    } catch (error) {
+        console.log(error);
+        const message = getErrorMessage(error);
+        if (message === 'Workspace not found') {
+            res.status(404).json({ success: false, message });
+            return;
+        }
+
+        res.status(500).json({ success: false, message: 'Something went wrong' });
     }
 }
