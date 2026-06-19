@@ -1,0 +1,62 @@
+{
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\eslint.config.mjs": {
+    "mtime": 1780638294.4717247,
+    "hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\next-env.d.ts": {
+    "mtime": 1780980803.49669,
+    "hash": "d0f8375ae1199dc7acd3977fc33b78b8"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\next.config.ts": {
+    "mtime": 1781766853.09139,
+    "hash": "3cca4c592d18288acf5166af58b49cd7"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\postcss.config.mjs": {
+    "mtime": 1780638294.4998114,
+    "hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\layout.tsx": {
+    "mtime": 1781839769.3059187,
+    "hash": "7421a9d23a6956b43ed23ca2e9ea3f4b"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\page.tsx": {
+    "mtime": 1781839940.989095,
+    "hash": "cf0a16229a90acfe55d79f79d6d14317"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\AGENTS.md": {
+    "mtime": 1780639283.9840515,
+    "hash": "9e09241799026ac05be315a2f0b50055"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\CLAUDE.md": {
+    "mtime": 1780639283.9933686,
+    "hash": "5c27369b226fcf2be8a6cfe52224e767"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\README.md": {
+    "mtime": 1780638294.4452548,
+    "hash": "f15aaa42d5d299d091b1171097ea56ad"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\file.svg": {
+    "mtime": 1780638294.5136142,
+    "hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\globe.svg": {
+    "mtime": 1780638294.529431,
+    "hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\next.svg": {
+    "mtime": 1780638294.543245,
+    "hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\team-photo.png": {
+    "mtime": 1781838255.9937544,
+    "hash": "3b1266be4e90664a9068ba9a309bf14d"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\vercel.svg": {
+    "mtime": 1780638294.5551434,
+    "hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\window.svg": {
+    "mtime": 1780638294.5653112,
+    "hash": "a2760511c65806022ad20adf74370ff3"
+  }
+}

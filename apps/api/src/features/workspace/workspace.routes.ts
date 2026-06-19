@@ -5,6 +5,7 @@ import {
     getWorkspaceByIdHandler,
     getWorkspacesHandler,
     updateWorkspaceHandler,
+    deleteWorkspaceHandler
 } from './workspace.controller.js';
 
 const WorkspaceRouter: express.Router = Router();
@@ -13,5 +14,6 @@ WorkspaceRouter.post('/', isAuthenticated, createWorkspaceHandler);
 WorkspaceRouter.get('/', isAuthenticated, getWorkspacesHandler);
 WorkspaceRouter.get('/:id', isAuthenticated, getWorkspaceByIdHandler);
 WorkspaceRouter.patch('/:id', isAuthenticated, updateWorkspaceHandler);
+WorkspaceRouter.delete('/:id', isAuthenticated, deleteWorkspaceHandler);
 
 export default WorkspaceRouter;
