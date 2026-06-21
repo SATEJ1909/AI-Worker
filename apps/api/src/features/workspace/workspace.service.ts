@@ -6,6 +6,14 @@ const workspaceSelect = {
     ownerId: true,
     createdAt: true,
     updatedAt: true,
+    integrations: {
+        select: {
+            id: true,
+            provider: true,
+            accountEmail: true,
+            createdAt: true,
+        }
+    }
 } as const;
 
 const validateWorkspaceName = (name: unknown) => {
