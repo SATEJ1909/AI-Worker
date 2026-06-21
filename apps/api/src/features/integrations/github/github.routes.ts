@@ -11,7 +11,7 @@ import {
 
 const GitHubRouter: express.Router = Router();
 
-GitHubRouter.get('/connect', connectGitHubHandler);
+GitHubRouter.get('/connect', isAuthenticated, connectGitHubHandler);
 GitHubRouter.get('/callback', githubCallbackHandler);
 GitHubRouter.get('/status', isAuthenticated, getGitHubStatusHandler);
 GitHubRouter.get('/profile', isAuthenticated, getGitHubProfileHandler);

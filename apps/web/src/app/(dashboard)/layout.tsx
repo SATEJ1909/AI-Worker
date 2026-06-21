@@ -1,4 +1,5 @@
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
+import { WorkspaceProvider } from '@/context/workspace-context';
 
 export default function DashboardLayout({
   children,
@@ -6,11 +7,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground font-[family-name:var(--font-inter)]">
-      <DashboardSidebar />
-      <main className="flex-1 overflow-y-auto relative flex flex-col">
-        {children}
-      </main>
-    </div>
+    <WorkspaceProvider>
+      <div className="flex h-screen overflow-hidden bg-background text-foreground font-[family-name:var(--font-inter)]">
+        <DashboardSidebar />
+        <main className="flex-1 overflow-y-auto relative flex flex-col">
+          {children}
+        </main>
+      </div>
+    </WorkspaceProvider>
   );
 }

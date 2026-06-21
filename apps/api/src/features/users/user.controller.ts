@@ -16,7 +16,7 @@ const getErrorMessage = (error: unknown) => {
 
 export const signupHandler: RequestHandler = async(req, res) =>{
     try {
-        const {email , password} = req.body ;
+        const {email , password , name} = req.body ;
         if(!email || !password){
             res.status(400).json({
                 success : false ,
@@ -27,10 +27,15 @@ export const signupHandler: RequestHandler = async(req, res) =>{
 
         const user = await signUp(email , password);
 
+        const token = jwt.sign({id : user.id} , JWT_SECRET , {
+            expiresIn : '1h'
+        })
+
         res.status(201).json({
             success : true ,
             message : "User created successfully" ,
             user : user,
+            token : token
         })
     } catch (error) {
         console.log(error);

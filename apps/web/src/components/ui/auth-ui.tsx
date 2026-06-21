@@ -5,7 +5,7 @@ import { useState, useId, useEffect } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -180,12 +180,17 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
 PasswordInput.displayName = "PasswordInput";
 
 function SignInForm() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => { 
     event.preventDefault(); 
+    if (isLoading) return;
+
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email");
     const password = formData.get("password");
 
+    setIsLoading(true);
     try {
       const res = await fetch("http://localhost:3000/api/v1/user/login", {
         method: "POST",
@@ -201,6 +206,8 @@ function SignInForm() {
       }
     } catch (e) {
       alert("Error logging in. Please ensure the backend is running.");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -213,22 +220,30 @@ function SignInForm() {
         <p className="text-balance text-sm text-muted-foreground">Welcome back to your personal AI agent</p>
       </div>
       <div className="grid gap-4">
-        <div className="grid gap-2"><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" placeholder="m@example.com" required autoComplete="email" /></div>
-        <PasswordInput name="password" label="Password" required autoComplete="current-password" placeholder="Password" />
-        <Button type="submit" className="mt-2 text-background bg-foreground hover:bg-foreground/90 font-medium">Sign In</Button>
+        <div className="grid gap-2"><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" placeholder="m@example.com" required autoComplete="email" disabled={isLoading} /></div>
+        <PasswordInput name="password" label="Password" required autoComplete="current-password" placeholder="Password" disabled={isLoading} />
+        <Button type="submit" disabled={isLoading} className="mt-2 text-background bg-foreground hover:bg-foreground/90 font-medium disabled:cursor-wait">
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Sign In
+        </Button>
       </div>
     </form>
   );
 }
 
 function SignUpForm() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => { 
     event.preventDefault(); 
+    if (isLoading) return;
+
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name");
     const email = formData.get("email");
     const password = formData.get("password");
 
+    setIsLoading(true);
     try {
       const res = await fetch("http://localhost:3000/api/v1/user/signup", {
         method: "POST",
@@ -244,6 +259,8 @@ function SignUpForm() {
       }
     } catch (e) {
       alert("Error signing up. Please ensure the backend is running.");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -256,10 +273,13 @@ function SignUpForm() {
         <p className="text-balance text-sm text-muted-foreground">Start automating your workflow today</p>
       </div>
       <div className="grid gap-4">
-        <div className="grid gap-1"><Label htmlFor="name">Full Name</Label><Input id="name" name="name" type="text" placeholder="John Doe" required autoComplete="name" /></div>
-        <div className="grid gap-2"><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" placeholder="m@example.com" required autoComplete="email" /></div>
-        <PasswordInput name="password" label="Password" required autoComplete="new-password" placeholder="Password"/>
-        <Button type="submit" className="mt-2 text-background bg-foreground hover:bg-foreground/90 font-medium">Sign Up</Button>
+        <div className="grid gap-1"><Label htmlFor="name">Full Name</Label><Input id="name" name="name" type="text" placeholder="John Doe" required autoComplete="name" disabled={isLoading} /></div>
+        <div className="grid gap-2"><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" placeholder="m@example.com" required autoComplete="email" disabled={isLoading} /></div>
+        <PasswordInput name="password" label="Password" required autoComplete="new-password" placeholder="Password" disabled={isLoading} />
+        <Button type="submit" disabled={isLoading} className="mt-2 text-background bg-foreground hover:bg-foreground/90 font-medium disabled:cursor-wait">
+          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Sign Up
+        </Button>
       </div>
     </form>
   );

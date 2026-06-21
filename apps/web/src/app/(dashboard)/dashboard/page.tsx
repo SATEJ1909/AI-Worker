@@ -1,13 +1,40 @@
-import { Bot, Zap, Plus, ArrowRight, LayoutDashboard, Settings } from 'lucide-react';
+'use client';
+
+import { Bot, Zap, Plus, ArrowRight, LayoutDashboard, Settings, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useWorkspace } from '@/context/workspace-context';
 
 export default function DashboardOverview() {
+  const { activeWorkspace, isLoading } = useWorkspace();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-8 h-8 rounded-full border-4 border-foreground border-t-transparent animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!activeWorkspace) {
+    return (
+      <div className="p-8 max-w-6xl mx-auto w-full">
+        <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+          <div>
+            <h4 className="font-semibold">No Workspace</h4>
+            <p className="text-sm mt-1">Please create or select a workspace first.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Overview: {activeWorkspace.name}</h1>
           <p className="text-muted-foreground mt-1">Welcome back. Here's what's happening with your agents.</p>
         </div>
         <Link href="/dashboard/agents/create" className="bg-foreground text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors flex items-center gap-2">

@@ -8,7 +8,11 @@ import {
     deleteWorkspaceHandler
 } from './workspace.controller.js';
 
+import IntegrationsRouter from './integrations.routes.js';
+
 const WorkspaceRouter: express.Router = Router();
+
+WorkspaceRouter.use('/:id/integrations', IntegrationsRouter);
 
 WorkspaceRouter.post('/', isAuthenticated, createWorkspaceHandler);
 WorkspaceRouter.get('/', isAuthenticated, getWorkspacesHandler);

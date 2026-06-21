@@ -52,6 +52,7 @@ model Integration {
   createdAt    DateTime @default(now())
 
   @@index([workspaceId])
+  @@unique([workspaceId, provider])
 }
 
 model Conversation {

@@ -1,41 +1,60 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Github, ArrowLeft, RefreshCw, Trash2, FolderGit2, AlertCircle } from 'lucide-react';
+import { GitBranch, ArrowLeft, RefreshCw, Trash2, FolderGit2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useWorkspace } from '@/context/workspace-context';
+import { useRouter } from 'next/navigation';
 
 interface Repo {
   id: number;
   name: string;
-  full_name: string;
+  fullName: string;
   private: boolean;
-  html_url: string;
+  htmlUrl: string;
+  description: string | null;
+  defaultBranch: string;
+  updatedAt: string | null;
 }
 
 export default function ConnectedGithubPage() {
+  const { activeWorkspace, isLoading: workspaceLoading, refreshWorkspaces } = useWorkspace();
+  const router = useRouter();
+  
   const [profile, setProfile] = useState<any>(null);
   const [repos, setRepos] = useState<Repo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchGithubData();
-  }, []);
+    if (activeWorkspace) {
+      fetchGithubData();
+    } else if (!workspaceLoading) {
+      setLoading(false);
+    }
+  }, [activeWorkspace, workspaceLoading]);
 
   const fetchGithubData = async () => {
+    if (!activeWorkspace) return;
+    
     setLoading(true);
     setError(null);
     try {
       const headers = {
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // Adjust auth as needed
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       };
 
       const [profileRes, reposRes] = await Promise.all([
-        fetch('http://localhost:3000/api/integrations/github/profile', { headers }),
-        fetch('http://localhost:3000/api/integrations/github/repos', { headers })
+        fetch(`http://localhost:3000/api/integrations/github/profile?workspaceId=${activeWorkspace.id}`, { headers }),
+        fetch(`http://localhost:3000/api/integrations/github/repos?workspaceId=${activeWorkspace.id}`, { headers })
       ]);
 
-      if (!profileRes.ok || !reposRes.ok) throw new Error('Failed to fetch GitHub data');
+      if (!profileRes.ok || !reposRes.ok) {
+         if (profileRes.status === 404 || reposRes.status === 404) {
+           throw new Error('GitHub integration not found. Please connect first.');
+         }
+         throw new Error('Failed to fetch GitHub data');
+      }
 
       const profileData = await profileRes.json();
       const reposData = await reposRes.json();
@@ -44,30 +63,57 @@ export default function ConnectedGithubPage() {
       setRepos(reposData.repos || []);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
+      setProfile(null);
+      setRepos([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDisconnect = async () => {
+    if (!activeWorkspace) return;
     if (!confirm('Are you sure you want to disconnect GitHub? Your agents will lose access to all repositories.')) return;
 
     try {
-      const res = await fetch('http://localhost:3000/api/integrations/github/disconnect', {
+      const res = await fetch(`http://localhost:3000/api/integrations/github/disconnect?workspaceId=${activeWorkspace.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (res.ok) {
-        window.location.href = '/dashboard/integrations';
+        await refreshWorkspaces();
+        router.push('/dashboard/integrations');
       } else {
-        alert('Failed to disconnect');
+        const data = await res.json();
+        alert(data.message || 'Failed to disconnect');
       }
     } catch (err) {
       alert('Failed to disconnect');
     }
   };
+
+  if (workspaceLoading || loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="w-8 h-8 rounded-full border-4 border-foreground border-t-transparent animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!activeWorkspace) {
+    return (
+      <div className="p-8 max-w-6xl mx-auto w-full">
+        <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+          <div>
+            <h4 className="font-semibold">No Workspace</h4>
+            <p className="text-sm mt-1">Please select a workspace.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -78,9 +124,9 @@ export default function ConnectedGithubPage() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <Github className="w-8 h-8" /> GitHub Integration
+            <GitBranch className="w-8 h-8" /> GitHub Integration
           </h1>
-          <p className="text-muted-foreground mt-1">Manage your connected GitHub account and repository access.</p>
+          <p className="text-muted-foreground mt-1">Manage GitHub access for {activeWorkspace.name}.</p>
         </div>
       </div>
 
@@ -94,26 +140,21 @@ export default function ConnectedGithubPage() {
         </div>
       )}
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="w-8 h-8 rounded-full border-4 border-foreground border-t-transparent animate-spin"></div>
-        </div>
-      ) : profile ? (
+      {profile && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
           {/* Profile Sidebar */}
           <div className="space-y-6">
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
               <div className="flex items-center gap-4 mb-6">
-                <img src={profile.avatar_url} alt="Profile" className="w-16 h-16 rounded-full bg-secondary" />
+                <img src={profile.avatarUrl} alt="Profile" className="w-16 h-16 rounded-full bg-secondary" />
                 <div>
                   <h3 className="font-bold text-lg">{profile.name || profile.login}</h3>
-                  <a href={profile.html_url} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground hover:underline">@{profile.login}</a>
+                  <a href={profile.htmlUrl} target="_blank" rel="noreferrer" className="text-sm text-muted-foreground hover:underline">@{profile.login}</a>
                 </div>
               </div>
               <div className="space-y-3 text-sm text-muted-foreground">
-                <p>Public Repos: <span className="font-medium text-foreground">{profile.public_repos}</span></p>
-                <p>Followers: <span className="font-medium text-foreground">{profile.followers}</span></p>
+                {profile.email && <p>Email: <span className="font-medium text-foreground">{profile.email}</span></p>}
               </div>
             </div>
 
@@ -148,10 +189,11 @@ export default function ConnectedGithubPage() {
                   {repos.map(repo => (
                     <div key={repo.id} className="p-4 flex items-center justify-between hover:bg-secondary/20 transition-colors">
                       <div>
-                        <a href={repo.html_url} target="_blank" rel="noreferrer" className="font-medium hover:underline flex items-center gap-2">
+                        <a href={repo.htmlUrl} target="_blank" rel="noreferrer" className="font-medium hover:underline flex items-center gap-2">
                           <FolderGit2 className="w-4 h-4 text-muted-foreground" />
-                          {repo.full_name}
+                          {repo.fullName}
                         </a>
+                        {repo.description && <p className="text-xs text-muted-foreground mt-1 ml-6">{repo.description}</p>}
                       </div>
                       {repo.private ? (
                         <span className="text-xs bg-secondary px-2 py-1 rounded text-muted-foreground">Private</span>
@@ -166,7 +208,7 @@ export default function ConnectedGithubPage() {
           </div>
 
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
