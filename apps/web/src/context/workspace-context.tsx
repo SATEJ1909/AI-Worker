@@ -29,6 +29,8 @@ interface WorkspaceContextType {
   deleteWorkspace: (id: string) => Promise<void>;
 }
 
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
+
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
@@ -48,14 +50,22 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const res = await fetch('http://localhost:3000/api/v1/workspaces', {
+      const res = await fetch(`${API_BASE}/workspaces`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
+      if (res.status === 401) {
+        // Token expired or invalid — clear auth state and redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('activeWorkspaceId');
+        window.location.href = '/sign-in';
+        return;
+      }
+
       if (!res.ok) {
-        throw new Error('Failed to fetch workspaces');
+        throw new Error(`Failed to fetch workspaces (${res.status})`);
       }
 
       const data = await res.json();
@@ -92,7 +102,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
 
-    const res = await fetch('http://localhost:3000/api/v1/workspaces', {
+    const res = await fetch(`${API_BASE}/workspaces`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -114,7 +124,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Not authenticated');
 
-    const res = await fetch(`http://localhost:3000/api/v1/workspaces/${id}`, {
+    const res = await fetch(`${API_BASE}/workspaces/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,

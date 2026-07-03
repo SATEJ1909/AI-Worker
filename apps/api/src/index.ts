@@ -1,22 +1,41 @@
-import express from 'express'
+import 'dotenv/config';
+import express from 'express';
 import cors from 'cors'
 import { prisma } from './config/prisma.js'
 import UserRouter from './features/users/user.routes.js';
 import WorkspaceRouter from './features/workspace/workspace.routes.js';
 import GitHubRouter from './features/integrations/github/github.routes.js';
+import ChatRouter from './features/chat/chat.routes.js';
+import { registerAllTools } from './features/tools/index.js';
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3001,http://localhost:3000').split(',');
+app.use(cors({
+   origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+         callback(null, true);
+      } else {
+         callback(new Error('Not allowed by CORS'));
+      }
+   },
+   credentials: true
+}));
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
+app.get('/health', (req, res) => {
+   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.use("/api/v1/user", UserRouter);
 app.use("/api/v1/workspaces", WorkspaceRouter);
+app.use("/api/v1/workspaces/:id/chat", ChatRouter);
 app.use("/api/integrations/github", GitHubRouter);
 
 async function main() {
    await prisma.$connect();
+   registerAllTools();
    app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
    });

@@ -13,6 +13,8 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
+
 export interface TypewriterProps {
   text: string | string[];
   speed?: number;
@@ -192,7 +194,7 @@ function SignInForm() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/v1/user/login", {
+      const res = await fetch(`${API_BASE}/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -245,7 +247,7 @@ function SignUpForm() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/v1/user/signup", {
+      const res = await fetch(`${API_BASE}/user/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password })

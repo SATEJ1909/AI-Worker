@@ -16,7 +16,7 @@ const publicUserSelect = {
     createdAt: true,
 } as const;
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (email: string, password: string, name?: string) => {
     try {
         const validation = requiredSchema.safeParse({ email, password });
         if (!validation.success) {
@@ -35,8 +35,14 @@ export const signUp = async (email: string, password: string) => {
 
         const user = await prisma.user.create({
             data: {
-                email: email, 
-                password: hashedPassword
+                email: email,
+                password: hashedPassword,
+                ...(name ? { name } : {}),
+                workspaces: {
+                    create: {
+                        name: name ? `${name}'s Workspace` : "Personal Workspace"
+                    }
+                }
             },
             select: publicUserSelect,
         });

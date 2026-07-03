@@ -9,10 +9,12 @@ import {
 } from './workspace.controller.js';
 
 import IntegrationsRouter from './integrations.routes.js';
+import ChatRouter from '../chat/chat.routes.js';
 
 const WorkspaceRouter: express.Router = Router();
 
 WorkspaceRouter.use('/:id/integrations', IntegrationsRouter);
+WorkspaceRouter.use('/:id/chat', ChatRouter);
 
 WorkspaceRouter.post('/', isAuthenticated, createWorkspaceHandler);
 WorkspaceRouter.get('/', isAuthenticated, getWorkspacesHandler);

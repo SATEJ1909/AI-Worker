@@ -53,11 +53,16 @@ export const createWorkspace = async (ownerId: string, name?: unknown) => {
 
 export const getWorkspaces = async (ownerId: string) => {
     try {
-        const workspaces = await prisma.workspace.findMany({
+        let workspaces = await prisma.workspace.findMany({
             where: { ownerId },
             orderBy: { createdAt: 'desc' },
             select: workspaceSelect,
         });
+
+        if (workspaces.length === 0) {
+            const defaultWorkspace = await createWorkspace(ownerId, "Personal Workspace");
+            workspaces = [defaultWorkspace];
+        }
 
         return workspaces;
     } catch (error) {

@@ -45,6 +45,8 @@ const INTEGRATION_PROVIDERS = [
   },
 ];
 
+const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 export default function IntegrationsPage() {
   const { activeWorkspace, isLoading } = useWorkspace();
   const [connectingProvider, setConnectingProvider] = useState<string | null>(null);
@@ -54,7 +56,7 @@ export default function IntegrationsPage() {
     
     try {
       setConnectingProvider(providerId);
-      const res = await fetch(`http://localhost:3000/api/integrations/${providerId}/connect?workspaceId=${activeWorkspace.id}`, {
+      const res = await fetch(`${API_HOST}/api/integrations/${providerId}/connect?workspaceId=${activeWorkspace.id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
