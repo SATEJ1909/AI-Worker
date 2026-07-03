@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Workflow, Plus, Play, MoreHorizontal, ArrowRight, RefreshCw, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
+
 export default function WorkflowHistoryPage() {
   const [workflows, setWorkflows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ export default function WorkflowHistoryPage() {
   }, []);
 
   const getWorkspaceId = async (headers: any) => {
-    const wsRes = await fetch('http://localhost:3000/api/v1/workspaces', { headers });
+    const wsRes = await fetch(`${API_BASE}/workspaces`, { headers });
     if (!wsRes.ok) throw new Error('Failed to fetch workspaces');
     const wsData = await wsRes.json();
     return wsData.workspaces?.[0]?.id;
@@ -31,7 +33,7 @@ export default function WorkflowHistoryPage() {
       const workspaceId = await getWorkspaceId(headers);
       if (!workspaceId) throw new Error('No workspace found');
 
-      const res = await fetch(`http://localhost:3000/api/v1/workflows?workspaceId=${workspaceId}`, { headers });
+      const res = await fetch(`${API_BASE}/workflows?workspaceId=${workspaceId}`, { headers });
       if (!res.ok) throw new Error('Failed to fetch workflows');
       
       const data = await res.json();
@@ -47,7 +49,7 @@ export default function WorkflowHistoryPage() {
     if (!confirm('Are you sure you want to delete this workflow?')) return;
     try {
       const headers = { 'Authorization': `Bearer ${localStorage.getItem('token')}` };
-      const res = await fetch(`http://localhost:3000/api/v1/workflows/${id}`, {
+      const res = await fetch(`${API_BASE}/workflows/${id}`, {
         method: 'DELETE',
         headers
       });

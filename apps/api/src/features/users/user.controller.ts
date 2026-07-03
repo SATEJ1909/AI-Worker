@@ -25,7 +25,7 @@ export const signupHandler: RequestHandler = async(req, res) =>{
             return;
         }
 
-        const user = await signUp(email , password);
+        const user = await signUp(email, password, typeof name === 'string' ? name : undefined);
 
         const token = jwt.sign({id : user.id} , JWT_SECRET , {
             expiresIn : '1h'

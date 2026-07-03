@@ -20,12 +20,12 @@
     "hash": "8195f9e9d80fee7f51e00fc6617c8517"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\index.ts": {
-    "mtime": 1781845872.93312,
-    "hash": "0a17a51b1a582e800dc3230ac6176268"
+    "mtime": 1782444470.04185,
+    "hash": "ffc9a787e9938325147882dfce62b3ed"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\config\\config.ts": {
-    "mtime": 1781845872.9111457,
-    "hash": "1656cd4ebc7dc2b87431a3f93301941b"
+    "mtime": 1782444453.386875,
+    "hash": "be389e2ac2f7224aeaa6c68522c64550"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\config\\prisma.config.ts": {
     "mtime": 1781239148.0748928,
@@ -35,13 +35,41 @@
     "mtime": 1781239148.076146,
     "hash": "fc75332d50dece765591d5e07ec1d738"
   },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\agent\\agent.orchestrator.ts": {
+    "mtime": 1782616985.500713,
+    "hash": "95fb52dc57d3a5f0fa33b4e444cce26e"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\agent\\agent.types.ts": {
+    "mtime": 1782443597.0510156,
+    "hash": "969689ad7a5b2c9abe004224580c8a17"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\agent\\context.builder.ts": {
+    "mtime": 1782616997.9703832,
+    "hash": "c0663437e298a5d4e87acb9dc6127114"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\agent\\gemini.client.ts": {
+    "mtime": 1782443629.9797566,
+    "hash": "c59c74dc6ea1ea2a438ed7ef22f46038"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\chat\\chat.controller.ts": {
+    "mtime": 1782444426.5079327,
+    "hash": "a93698eb3e3c110a613d446d2533673c"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\chat\\chat.routes.ts": {
+    "mtime": 1782444435.5651102,
+    "hash": "ae24a85401bce360688fed5c329753c3"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\chat\\chat.service.ts": {
+    "mtime": 1782443762.354539,
+    "hash": "3ba0f2f3d9274f23ff6bcf86939799b6"
+  },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\integrations\\github\\github.controller.ts": {
     "mtime": 1781845872.9158063,
     "hash": "3e227760bc89322323f4a87b7614c3b3"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\integrations\\github\\github.routes.ts": {
-    "mtime": 1781845872.9178257,
-    "hash": "73611d30fcfe6b16605c0edd976699c2"
+    "mtime": 1782020522.014998,
+    "hash": "5fc716f8e4d32d681c193ca1c3c93e77"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\integrations\\github\\github.service.ts": {
     "mtime": 1781845872.9210572,
@@ -51,9 +79,29 @@
     "mtime": 1781845872.9239192,
     "hash": "b6f84bef6741b091d2d350823c586b0e"
   },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\tools\\index.ts": {
+    "mtime": 1782443570.0566752,
+    "hash": "54bef6d137e6470cba456fa5ec92431c"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\tools\\tool.executor.ts": {
+    "mtime": 1782443496.9114974,
+    "hash": "4707e964aa04e1001fc777a4743dad3e"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\tools\\tool.registry.ts": {
+    "mtime": 1782444633.3950205,
+    "hash": "45f97515eba73236e92cd30851a4baf2"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\tools\\tool.types.ts": {
+    "mtime": 1782443427.4448884,
+    "hash": "4ef033adedb0ecfdcd50357c0c75e571"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\tools\\github\\github.tools.ts": {
+    "mtime": 1782617011.561993,
+    "hash": "1e78cd350d9883d916cb77407d95838e"
+  },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\users\\user.controller.ts": {
-    "mtime": 1781239148.078516,
-    "hash": "1f2cd86a328265d82c0464f8ceac6ee1"
+    "mtime": 1782020522.016206,
+    "hash": "3dd80fdb505416efcad661bce4487f9e"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\users\\user.routes.ts": {
     "mtime": 1781239148.0799015,
@@ -64,23 +112,23 @@
     "hash": "a3640677101b5f82dbdf7eb6a2e749ab"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\workspace\\integrations.controller.ts": {
-    "mtime": 1781863008.7806416,
-    "hash": "ff8dc215f1c5235a94f9150211a126a8"
+    "mtime": 1782020522.0172179,
+    "hash": "2fd35f07607869f5165a77bf9999ae9d"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\workspace\\integrations.routes.ts": {
-    "mtime": 1781863010.8368094,
-    "hash": "21058c18e9e17bd1739d704813db9ab3"
+    "mtime": 1782020522.0182168,
+    "hash": "d9b1dfec3119ae80afae57436ee84de1"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\workspace\\workspace.controller.ts": {
     "mtime": 1781845872.9259837,
     "hash": "f5945012cea0b80ec6949c1493edb5cc"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\workspace\\workspace.routes.ts": {
-    "mtime": 1781863047.194064,
-    "hash": "729df350cec44aadc1ee608af4ecac0d"
+    "mtime": 1782444444.1090138,
+    "hash": "7b759f890fabbab9e0a927a60b5a7aa8"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\features\\workspace\\workspace.service.ts": {
-    "mtime": 1781862288.2679138,
+    "mtime": 1782020522.020026,
     "hash": "a14b399e4c5c481a9b702b9f0394e31f"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\api\\src\\generated\\prisma\\browser.ts": {
@@ -156,8 +204,8 @@
     "hash": "dfa1f5f6a7037bf39dc510f30b180002"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\next-env.d.ts": {
-    "mtime": 1780980803.49669,
-    "hash": "d0f8375ae1199dc7acd3977fc33b78b8"
+    "mtime": 1782533815.6202352,
+    "hash": "2a74d3909800ca5467fa83b0ab4a4890"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\next.config.ts": {
     "mtime": 1781845872.9765036,
@@ -172,7 +220,7 @@
     "hash": "9266d19cf840a5ad01a62c71b63381fb"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\page.tsx": {
-    "mtime": 1782019058.0941155,
+    "mtime": 1782020522.0373392,
     "hash": "0e5ac30b4a6edd74e6cb1447e0b820b8"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(auth)\\sign-in\\page.tsx": {
@@ -184,64 +232,76 @@
     "hash": "b7316ecf09349b06050456cb821363bf"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\layout.tsx": {
-    "mtime": 1781862323.9524486,
+    "mtime": 1782020522.0368292,
     "hash": "747b2997e209a5751d46dfcb80aa4b93"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\agents\\page.tsx": {
-    "mtime": 1781845873.0113308,
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\page.tsx": {
+    "mtime": 1782020522.0292652,
+    "hash": "0b5a9c82700fde973d4efe2aaa361986"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\agents\\page.tsx": {
+    "mtime": 1782020522.0245917,
     "hash": "c75da2098a4f9b7c6ece8491c27356ce"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\agents\\create\\page.tsx": {
-    "mtime": 1781845873.0093493,
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\agents\\create\\page.tsx": {
+    "mtime": 1782020522.0245917,
     "hash": "4550f479d8765c14ba91ad958981f179"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\agents\\[id]\\page.tsx": {
-    "mtime": 1781845873.007332,
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\agents\\[id]\\page.tsx": {
+    "mtime": 1782020522.0225792,
     "hash": "fac6d6f28119eaaa3412b515fad2bcf9"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\chat\\page.tsx": {
-    "mtime": 1781845873.0138426,
-    "hash": "c4f616d73d4bcd0f006f5af69066be8c"
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\chat\\page.tsx": {
+    "mtime": 1782533776.3949745,
+    "hash": "613183fe3db11e003d7d46006f8c46d8"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\page.tsx": {
-    "mtime": 1781862734.427633,
-    "hash": "07fd8f6651a6db6026a46ed7d0b6f905"
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\integrations\\page.tsx": {
+    "mtime": 1782020522.0282655,
+    "hash": "3200d59397a0aa24e57c0dc89fbdc9ee"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\integrations\\page.tsx": {
-    "mtime": 1782018751.8435676,
-    "hash": "4547a270eaef03b33502179fcfae4d64"
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\integrations\\github\\page.tsx": {
+    "mtime": 1782020522.0272655,
+    "hash": "c7d724b4e1b7fa89dd0ab0f834624452"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\integrations\\github\\page.tsx": {
-    "mtime": 1781862698.4578185,
-    "hash": "f758e7d905435c934f7c147f4006741e"
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\settings\\page.tsx": {
+    "mtime": 1782020522.031265,
+    "hash": "21bf499b83d84d11b06b2200ceec0d38"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\settings\\page.tsx": {
-    "mtime": 1782018899.4031205,
-    "hash": "ab7f9c92180ee9fdf1aced7d09d7d43a"
-  },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\workflows\\builder\\page.tsx": {
-    "mtime": 1781845873.0331032,
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\workflows\\builder\\page.tsx": {
+    "mtime": 1782020522.032234,
     "hash": "4c0d29b6fdbb931aecdb31e70804d40d"
   },
-  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\workflows\\history\\page.tsx": {
-    "mtime": 1781845873.0346253,
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\app\\(dashboard)\\dashboard\\workflows\\history\\page.tsx": {
+    "mtime": 1782020522.0353098,
     "hash": "ad68bf8588972c2191c5b4204be8c323"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\components\\create-workspace-modal.tsx": {
-    "mtime": 1782018684.6868982,
-    "hash": "8db1df711a9359d8ee6f266c264ab12c"
+    "mtime": 1782020522.0388575,
+    "hash": "c4bfda41647f9d3379291b3056ad69cc"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\components\\dashboard-sidebar.tsx": {
-    "mtime": 1782018102.8581371,
-    "hash": "f2586b7dd99d5ac2ecb1345bc12694c8"
+    "mtime": 1782020522.0398657,
+    "hash": "7576d70e20f4d6d0491653043b1f6248"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\components\\chat\\message-bubble.tsx": {
+    "mtime": 1782533794.9713051,
+    "hash": "780236d3c58bf70d2072a94495871d84"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\components\\chat\\tool-call-card.tsx": {
+    "mtime": 1782533786.8002515,
+    "hash": "d651b7583fdc0b8f58f615df7b87a963"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\components\\ui\\auth-ui.tsx": {
-    "mtime": 1782018663.6497245,
+    "mtime": 1782020522.0429442,
     "hash": "431bf1be28fe16a2e3e4b79853d1b739"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\context\\workspace-context.tsx": {
-    "mtime": 1782018881.7301176,
-    "hash": "cd92285e5d7fe55772e46d666c67ccb9"
+    "mtime": 1782020522.0439875,
+    "hash": "72e5a4d9df809eef7a971ce526705ce3"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\src\\hooks\\use-chat.ts": {
+    "mtime": 1782533398.8376656,
+    "hash": "aade7cc0faf8f5013e19c1fb48ba005d"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\packages\\eslint-config\\base.js": {
     "mtime": 1780581554.0,
@@ -302,6 +362,14 @@
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\plan\\implementation_plan.md": {
     "mtime": 1780817668.5913348,
     "hash": "09d8f489b9adb05dfee1c6b620a05b57"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\graphify-out\\memory\\query_20260624_034736_what_remains_incomplete_and_what_should_the_next_d.md": {
+    "mtime": 1782272856.9787507,
+    "hash": "7cfe0d8210da3179d2c00273ae9e3893"
+  },
+  "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\graphify-out\\memory\\query_20260624_035115_which_defects_can_be_fixed_now_in_the_current_impl.md": {
+    "mtime": 1782273075.0446467,
+    "hash": "e1729b894bd91cc404094bc273285c8f"
   },
   "C:\\Users\\satej\\Desktop\\projects\\ai-worker\\apps\\web\\public\\file.svg": {
     "mtime": 1780638294.5136142,

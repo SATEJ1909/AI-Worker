@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { User, Building, LogOut, Save, AlertCircle, CheckCircle2, Loader2, Trash2 } from 'lucide-react';
 import { useWorkspace } from '@/context/workspace-context';
 
+const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
+
 export default function SettingsPage() {
   const { activeWorkspace, refreshWorkspaces, isLoading: workspaceLoading, deleteWorkspace } = useWorkspace();
   const [profile, setProfile] = useState<any>(null);
@@ -30,7 +32,7 @@ export default function SettingsPage() {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       };
 
-      const profileRes = await fetch('http://localhost:3000/api/v1/user/profile', { headers });
+      const profileRes = await fetch(`${API_BASE}/user/profile`, { headers });
 
       if (profileRes.ok) {
         const data = await profileRes.json();
@@ -50,7 +52,7 @@ export default function SettingsPage() {
     setMessage(null);
 
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/workspaces/${activeWorkspace.id}`, {
+      const res = await fetch(`${API_BASE}/workspaces/${activeWorkspace.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

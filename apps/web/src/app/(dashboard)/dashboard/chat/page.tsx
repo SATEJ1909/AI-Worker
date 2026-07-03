@@ -1,143 +1,338 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Settings, User, FileText, Paperclip, MoreHorizontal } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  Bot, Send, Plus, Trash2, MessageSquare, ChevronRight,
+  Loader2, Sparkles, X, Menu
+} from 'lucide-react';
+import { useWorkspace } from '@/context/workspace-context';
+import { useChat, type Conversation } from '@/hooks/use-chat';
+import { MessageBubble } from '@/components/chat/message-bubble';
 
-export default function ChatInterfacePage() {
-  const [messages, setMessages] = useState([
-    { id: 1, role: 'assistant', content: "Hello! I'm your TaskMind agent. I'm connected to your workspace. What can I help you with today?" }
-  ]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+// ─── Format date helpers ─────────────────────────────────────────────────────
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+function formatRelative(dateStr: string): string {
+  const now = Date.now();
+  const d = new Date(dateStr).getTime();
+  const diff = now - d;
+  if (diff < 60_000) return 'just now';
+  if (diff < 3600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3600_000)}h ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading]);
+// ─── Conversation sidebar item ───────────────────────────────────────────────
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMsg = { id: Date.now(), role: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setLoading(true);
-
-    // Mock response
-    setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        id: Date.now(), 
-        role: 'assistant', 
-        content: `I've received your request: "${userMsg.content}". Since I'm currently running in preview mode, I can't execute real backend actions yet. However, I'm ready to help you orchestrate your tasks once fully connected!` 
-      }]);
-      setLoading(false);
-    }, 1500);
-  };
+function ConversationItem({
+  conv,
+  isActive,
+  onSelect,
+  onDelete,
+}: {
+  conv: Conversation;
+  isActive: boolean;
+  onSelect: () => void;
+  onDelete: () => void;
+}) {
+  const [showDelete, setShowDelete] = useState(false);
 
   return (
-    <div className="flex flex-col h-full bg-background animate-in fade-in duration-500">
-      
-      {/* Header */}
-      <div className="h-16 border-b border-border flex items-center justify-between px-6 shrink-0 bg-background/95 backdrop-blur z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center border border-border">
-            <Bot className="w-4 h-4 text-foreground" />
-          </div>
-          <div>
-            <h2 className="font-bold text-sm">General Assistant</h2>
-            <div className="text-xs text-muted-foreground flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span> Online
-            </div>
-          </div>
-        </div>
-        <button className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground">
-          <Settings className="w-5 h-5" />
+    <div
+      className={`group relative flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
+        isActive
+          ? 'bg-violet-500/15 border border-violet-500/30 text-foreground'
+          : 'hover:bg-secondary border border-transparent text-muted-foreground hover:text-foreground'
+      }`}
+      onClick={onSelect}
+      onMouseEnter={() => setShowDelete(true)}
+      onMouseLeave={() => setShowDelete(false)}
+    >
+      <MessageSquare className="w-3.5 h-3.5 shrink-0 opacity-60" />
+      <span className="flex-1 text-xs truncate font-medium">
+        {conv.title ?? 'New conversation'}
+      </span>
+      <span className="text-[10px] opacity-40 shrink-0 hidden group-hover:block">
+        {formatRelative(conv.updatedAt)}
+      </span>
+      {showDelete && (
+        <button
+          onClick={e => { e.stopPropagation(); onDelete(); }}
+          className="shrink-0 p-0.5 rounded text-muted-foreground hover:text-red-400 transition-colors"
+        >
+          <Trash2 className="w-3 h-3" />
         </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Typing indicator ────────────────────────────────────────────────────────
+
+function TypingIndicator() {
+  return (
+    <div className="flex gap-3">
+      <div className="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/40 flex items-center justify-center shrink-0 text-xs font-bold text-violet-300">
+        AI
       </div>
-
-      {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex gap-4 max-w-3xl mx-auto ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-            
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-border ${msg.role === 'user' ? 'bg-secondary' : 'bg-background'}`}>
-              {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-            </div>
-
-            <div className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-medium text-muted-foreground">{msg.role === 'user' ? 'You' : 'TaskMind'}</span>
-              </div>
-              <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm border ${
-                msg.role === 'user' 
-                  ? 'bg-foreground text-background rounded-tr-sm border-transparent' 
-                  : 'bg-card text-foreground rounded-tl-sm border-border'
-              }`}>
-                {msg.content}
-              </div>
-            </div>
-
-          </div>
-        ))}
-
-        {loading && (
-          <div className="flex gap-4 max-w-3xl mx-auto">
-            <div className="w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center shrink-0">
-              <Bot className="w-4 h-4" />
-            </div>
-            <div className="bg-card border border-border px-4 py-4 rounded-2xl rounded-tl-sm flex items-center gap-1.5 shadow-sm">
-              <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce"></div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+      <div className="bg-card border border-border px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5 shadow-sm">
+        <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:0ms]" />
+        <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:150ms]" />
+        <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:300ms]" />
       </div>
+    </div>
+  );
+}
 
-      {/* Input Area */}
-      <div className="p-4 md:p-6 bg-background shrink-0">
-        <div className="max-w-3xl mx-auto relative">
-          <form onSubmit={handleSend} className="relative flex items-end gap-2 bg-card border border-border rounded-xl shadow-sm p-2 focus-within:ring-2 focus-within:ring-foreground/20 focus-within:border-foreground/50 transition-all">
-            
-            <button type="button" className="p-2 text-muted-foreground hover:bg-secondary rounded-lg transition-colors shrink-0">
-              <Paperclip className="w-5 h-5" />
-            </button>
+// ─── Empty state ─────────────────────────────────────────────────────────────
 
-            <textarea 
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend(e);
-                }
-              }}
-              placeholder="Ask TaskMind to do anything..."
-              className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none resize-none py-3 text-sm focus:outline-none placeholder:text-muted-foreground"
-              rows={1}
-            />
+function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
+  const prompts = [
+    'List all my GitHub repositories',
+    'Search for "useState" across my repos',
+    'Show me the README from my latest repo',
+    'Create a bug report issue in a repository',
+  ];
 
-            <button 
-              type="submit" 
-              disabled={!input.trim() || loading}
-              className="p-2 bg-foreground text-background rounded-lg hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 mb-0.5 mr-0.5"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-
-          </form>
-          <div className="text-center mt-2">
-            <span className="text-[10px] text-muted-foreground">TaskMind can make mistakes. Consider verifying important information.</span>
-          </div>
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center animate-in fade-in duration-500">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/30 to-indigo-500/30 border border-violet-500/30 flex items-center justify-center">
+          <Sparkles className="w-8 h-8 text-violet-400" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">TaskMind Agent</h2>
+          <p className="text-sm text-muted-foreground mt-1 max-w-xs">
+            I can interact with your connected tools. Ask me to do something.
+          </p>
         </div>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
+        {prompts.map(p => (
+          <button
+            key={p}
+            onClick={() => onPromptClick(p)}
+            className="text-left px-4 py-3 rounded-xl border border-border bg-card hover:border-violet-500/40 hover:bg-violet-500/5 transition-all duration-200 text-xs text-muted-foreground hover:text-foreground group"
+          >
+            <span className="text-violet-400 group-hover:text-violet-300 mr-1.5">›</span>
+            {p}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main chat page ───────────────────────────────────────────────────────────
+
+export default function ChatPage() {
+  const { activeWorkspace } = useWorkspace();
+  const workspaceId = activeWorkspace?.id;
+
+  const {
+    conversations,
+    activeConversationId,
+    messages,
+    isStreaming,
+    isLoadingConversations,
+    isLoadingMessages,
+    fetchConversations,
+    loadConversation,
+    deleteConversation,
+    sendMessage,
+    startNewConversation,
+  } = useChat(workspaceId);
+
+  const [input, setInput] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initial load
+  useEffect(() => {
+    if (workspaceId) fetchConversations();
+  }, [workspaceId, fetchConversations]);
+
+  // Auto-scroll
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    ta.style.height = `${Math.min(ta.scrollHeight, 128)}px`;
+  }, [input]);
+
+  const handleSend = useCallback(
+    async (text?: string) => {
+      const content = (text ?? input).trim();
+      if (!content || isStreaming) return;
+      setInput('');
+      await sendMessage(content);
+    },
+    [input, isStreaming, sendMessage],
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  // ── No workspace selected ─────────────────────────────────────────────────
+  if (!workspaceId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center gap-4">
+        <Bot className="w-12 h-12 text-muted-foreground" />
+        <h2 className="text-lg font-semibold">No workspace selected</h2>
+        <p className="text-sm text-muted-foreground max-w-xs">
+          Select or create a workspace to start chatting with the AI agent.
+        </p>
+      </div>
+    );
+  }
+
+  const showMessages = messages.length > 0;
+  const showTyping = isStreaming && messages.length > 0 && messages[messages.length - 1].role !== 'assistant';
+
+  return (
+    <div className="flex h-full overflow-hidden bg-background">
+
+      {/* ── Sidebar ───────────────────────────────────────────────────────── */}
+      <div className={`flex flex-col shrink-0 border-r border-border bg-background/50 transition-all duration-300 overflow-hidden ${
+        sidebarOpen ? 'w-60' : 'w-0'
+      }`}>
+        <div className="p-3 border-b border-border flex items-center justify-between min-w-[240px]">
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Conversations</span>
+          <button
+            onClick={startNewConversation}
+            className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            title="New conversation"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-2 space-y-0.5 min-w-[240px]">
+          {isLoadingConversations ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : conversations.length === 0 ? (
+            <p className="text-xs text-muted-foreground text-center py-8 px-2">
+              No conversations yet. Send a message to start one.
+            </p>
+          ) : (
+            conversations.map(conv => (
+              <ConversationItem
+                key={conv.id}
+                conv={conv}
+                isActive={conv.id === activeConversationId}
+                onSelect={() => loadConversation(conv.id)}
+                onDelete={() => deleteConversation(conv.id)}
+              />
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* ── Main chat area ────────────────────────────────────────────────── */}
+      <div className="flex flex-col flex-1 min-w-0">
+
+        {/* Header */}
+        <div className="h-14 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background/95 backdrop-blur z-10">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(v => !v)}
+              className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500/30 to-indigo-500/30 border border-violet-500/30 flex items-center justify-center">
+                <Bot className="w-3.5 h-3.5 text-violet-400" />
+              </div>
+              <div>
+                <h1 className="text-sm font-bold leading-none">TaskMind</h1>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="text-[10px] text-muted-foreground">
+                    {activeWorkspace.name}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {activeConversationId && (
+            <button
+              onClick={startNewConversation}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-secondary transition-all border border-transparent hover:border-border"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              New chat
+            </button>
+          )}
+        </div>
+
+        {/* Messages area */}
+        <div className="flex-1 overflow-y-auto">
+          {isLoadingMessages ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : !showMessages ? (
+            <EmptyState onPromptClick={p => handleSend(p)} />
+          ) : (
+            <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+              {messages.map(msg => (
+                <MessageBubble key={msg.id} message={msg} />
+              ))}
+              {showTyping && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* Input area */}
+        <div className="px-4 pb-4 pt-2 bg-background shrink-0">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative flex items-end gap-2 bg-card border border-border rounded-2xl shadow-md p-2 focus-within:ring-1 focus-within:ring-violet-500/50 focus-within:border-violet-500/50 transition-all duration-200">
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask TaskMind to do anything… (Shift+Enter for new line)"
+                disabled={isStreaming}
+                rows={1}
+                className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none resize-none py-3 px-2 text-sm focus:outline-none placeholder:text-muted-foreground disabled:opacity-50"
+              />
+
+              <button
+                onClick={() => handleSend()}
+                disabled={!input.trim() || isStreaming}
+                className="shrink-0 p-2.5 rounded-xl bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 mb-0.5"
+              >
+                {isStreaming
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : <Send className="w-4 h-4" />
+                }
+              </button>
+            </div>
+
+            <p className="text-center text-[10px] text-muted-foreground mt-2">
+              TaskMind can use your connected tools. Verify important results.
+            </p>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

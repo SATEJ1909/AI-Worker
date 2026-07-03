@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useWorkspace } from '@/context/workspace-context';
 import { useRouter } from 'next/navigation';
 
+const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 interface Repo {
   id: number;
   name: string;
@@ -45,8 +47,8 @@ export default function ConnectedGithubPage() {
       };
 
       const [profileRes, reposRes] = await Promise.all([
-        fetch(`http://localhost:3000/api/integrations/github/profile?workspaceId=${activeWorkspace.id}`, { headers }),
-        fetch(`http://localhost:3000/api/integrations/github/repos?workspaceId=${activeWorkspace.id}`, { headers })
+        fetch(`${API_HOST}/api/integrations/github/profile?workspaceId=${activeWorkspace.id}`, { headers }),
+        fetch(`${API_HOST}/api/integrations/github/repos?workspaceId=${activeWorkspace.id}`, { headers })
       ]);
 
       if (!profileRes.ok || !reposRes.ok) {
@@ -75,7 +77,7 @@ export default function ConnectedGithubPage() {
     if (!confirm('Are you sure you want to disconnect GitHub? Your agents will lose access to all repositories.')) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/integrations/github/disconnect?workspaceId=${activeWorkspace.id}`, {
+      const res = await fetch(`${API_HOST}/api/integrations/github/disconnect?workspaceId=${activeWorkspace.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
