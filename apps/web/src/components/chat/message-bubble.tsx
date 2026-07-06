@@ -18,7 +18,7 @@ function renderMarkdown(text: string) {
   const flush = (i: number) => {
     if (codeLines.length > 0) {
       elements.push(
-        <pre key={`code-${i}`} className="bg-black/30 border border-white/10 rounded-lg px-4 py-3 my-2 overflow-x-auto text-[12px] font-mono leading-relaxed text-emerald-300">
+        <pre key={`code-${i}`} className="bg-black/40 border border-white/5 rounded-lg px-4 py-3 my-2 overflow-x-auto text-[12px] font-mono leading-relaxed text-emerald-300">
           {codeLines.join('\n')}
         </pre>
       );
@@ -53,7 +53,7 @@ function renderMarkdown(text: string) {
 
     // Horizontal rule
     if (line.match(/^---+$/)) {
-      elements.push(<hr key={i} className="border-white/10 my-2" />);
+      elements.push(<hr key={i} className="border-white/5 my-2" />);
       return;
     }
 
@@ -114,7 +114,7 @@ function inlineMarkdown(text: string): React.ReactNode[] {
       parts.push(<em key={match.index}>{match[4]}</em>);
     } else if (match[5]) {
       parts.push(
-        <code key={match.index} className="bg-black/30 text-emerald-300 px-1 py-0.5 rounded text-[11px] font-mono">
+        <code key={match.index} className="bg-white/5 text-emerald-300 px-1.5 py-0.5 rounded text-[11px] font-mono border border-white/5">
           {match[5]}
         </code>
       );
@@ -134,8 +134,8 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       {/* Avatar */}
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold border ${
         isUser
-          ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300'
-          : 'bg-violet-500/20 border-violet-500/40 text-violet-300'
+          ? 'bg-foreground/10 border-foreground/10 text-foreground/70'
+          : 'bg-foreground/5 border-border text-muted-foreground'
       }`}>
         {isUser ? 'U' : 'AI'}
       </div>
@@ -156,8 +156,8 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {(message.content || message.isStreaming) && (
           <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed border shadow-sm ${
             isUser
-              ? 'bg-indigo-500/20 border-indigo-500/30 text-foreground rounded-tr-sm'
-              : 'bg-card border-border text-foreground rounded-tl-sm'
+              ? 'bg-foreground/10 border-foreground/10 text-foreground rounded-tr-sm'
+              : 'glass text-foreground rounded-tl-sm'
           }`}>
             {isUser ? (
               <p className="whitespace-pre-wrap">{message.content}</p>
@@ -165,7 +165,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               <div className="space-y-0.5">
                 {renderMarkdown(message.content)}
                 {message.isStreaming && (
-                  <span className="inline-block w-0.5 h-4 bg-violet-400 animate-pulse ml-0.5 align-text-bottom rounded-full" />
+                  <span className="inline-block w-0.5 h-4 bg-foreground/40 animate-pulse ml-0.5 align-text-bottom rounded-full" />
                 )}
               </div>
             )}

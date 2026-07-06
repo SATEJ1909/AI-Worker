@@ -38,9 +38,9 @@ function ConversationItem({
 
   return (
     <div
-      className={`group relative flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
+      className={`group relative flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
         isActive
-          ? 'bg-violet-500/15 border border-violet-500/30 text-foreground'
+          ? 'bg-foreground/10 border border-foreground/10 text-foreground'
           : 'hover:bg-secondary border border-transparent text-muted-foreground hover:text-foreground'
       }`}
       onClick={onSelect}
@@ -71,13 +71,13 @@ function ConversationItem({
 function TypingIndicator() {
   return (
     <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/40 flex items-center justify-center shrink-0 text-xs font-bold text-violet-300">
+      <div className="w-8 h-8 rounded-full bg-foreground/10 border border-foreground/10 flex items-center justify-center shrink-0 text-xs font-bold text-muted-foreground">
         AI
       </div>
-      <div className="bg-card border border-border px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5 shadow-sm">
-        <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:0ms]" />
-        <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:150ms]" />
-        <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:300ms]" />
+      <div className="glass px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:0ms]" />
+        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:150ms]" />
+        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:300ms]" />
       </div>
     </div>
   );
@@ -96,25 +96,25 @@ function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center animate-in fade-in duration-500">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/30 to-indigo-500/30 border border-violet-500/30 flex items-center justify-center">
-          <Sparkles className="w-8 h-8 text-violet-400" />
+        <div className="w-16 h-16 rounded-2xl bg-foreground/5 border border-border flex items-center justify-center animate-float">
+          <Sparkles className="w-8 h-8 text-muted-foreground" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">TaskMind Agent</h2>
+          <h2 className="text-xl font-bold font-[family-name:var(--font-sora)]">TaskMind Agent</h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-xs">
             I can interact with your connected tools. Ask me to do something.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
         {prompts.map(p => (
           <button
             key={p}
             onClick={() => onPromptClick(p)}
-            className="text-left px-4 py-3 rounded-xl border border-border bg-card hover:border-violet-500/40 hover:bg-violet-500/5 transition-all duration-200 text-xs text-muted-foreground hover:text-foreground group"
+            className="text-left px-4 py-3 rounded-xl border border-border glass hover:bg-white/[0.04] transition-all duration-200 text-xs text-muted-foreground hover:text-foreground group"
           >
-            <span className="text-violet-400 group-hover:text-violet-300 mr-1.5">›</span>
+            <span className="text-foreground/40 group-hover:text-foreground/60 mr-1.5">›</span>
             {p}
           </button>
         ))}
@@ -153,9 +153,14 @@ export default function ChatPage() {
     if (workspaceId) fetchConversations();
   }, [workspaceId, fetchConversations]);
 
-  // Auto-scroll
+  // Auto-scroll (throttled to avoid jank during streaming)
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollTimerRef.current) return;
+    scrollTimerRef.current = setTimeout(() => {
+      scrollTimerRef.current = null;
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   }, [messages]);
 
   // Auto-resize textarea
@@ -203,14 +208,14 @@ export default function ChatPage() {
     <div className="flex h-full overflow-hidden bg-background">
 
       {/* ── Sidebar ───────────────────────────────────────────────────────── */}
-      <div className={`flex flex-col shrink-0 border-r border-border bg-background/50 transition-all duration-300 overflow-hidden ${
+      <div className={`flex flex-col shrink-0 border-r border-border bg-card/30 backdrop-blur-sm transition-all duration-300 overflow-hidden ${
         sidebarOpen ? 'w-60' : 'w-0'
       }`}>
         <div className="p-3 border-b border-border flex items-center justify-between min-w-[240px]">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Conversations</span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Conversations</span>
           <button
             onClick={startNewConversation}
-            className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            className="p-1.5 rounded-lg hover:bg-secondary transition-all duration-200 text-muted-foreground hover:text-foreground"
             title="New conversation"
           >
             <Plus className="w-4 h-4" />
@@ -219,8 +224,10 @@ export default function ChatPage() {
 
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5 min-w-[240px]">
           {isLoadingConversations ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            <div className="space-y-1.5 p-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="skeleton h-8 rounded-lg" style={{ opacity: 1 - i * 0.2 }} />
+              ))}
             </div>
           ) : conversations.length === 0 ? (
             <p className="text-xs text-muted-foreground text-center py-8 px-2">
@@ -244,22 +251,22 @@ export default function ChatPage() {
       <div className="flex flex-col flex-1 min-w-0">
 
         {/* Header */}
-        <div className="h-14 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background/95 backdrop-blur z-10">
+        <div className="h-14 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-10">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(v => !v)}
-              className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              className="p-1.5 rounded-lg hover:bg-secondary transition-all duration-200 text-muted-foreground hover:text-foreground"
             >
               <Menu className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500/30 to-indigo-500/30 border border-violet-500/30 flex items-center justify-center">
-                <Bot className="w-3.5 h-3.5 text-violet-400" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-foreground/5 border border-border flex items-center justify-center">
+                <Bot className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
                 <h1 className="text-sm font-bold leading-none">TaskMind</h1>
-                <div className="flex items-center gap-1 mt-0.5">
+                <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   <span className="text-[10px] text-muted-foreground">
                     {activeWorkspace.name}
@@ -272,7 +279,7 @@ export default function ChatPage() {
           {activeConversationId && (
             <button
               onClick={startNewConversation}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-secondary transition-all border border-transparent hover:border-border"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-secondary transition-all duration-200 border border-transparent hover:border-border"
             >
               <Plus className="w-3.5 h-3.5" />
               New chat
@@ -302,7 +309,7 @@ export default function ChatPage() {
         {/* Input area */}
         <div className="px-4 pb-4 pt-2 bg-background shrink-0">
           <div className="max-w-3xl mx-auto">
-            <div className="relative flex items-end gap-2 bg-card border border-border rounded-2xl shadow-md p-2 focus-within:ring-1 focus-within:ring-violet-500/50 focus-within:border-violet-500/50 transition-all duration-200">
+            <div className="relative flex items-end gap-2 glass rounded-2xl p-2 focus-within:ring-1 focus-within:ring-foreground/10 transition-all duration-200">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -311,13 +318,13 @@ export default function ChatPage() {
                 placeholder="Ask TaskMind to do anything… (Shift+Enter for new line)"
                 disabled={isStreaming}
                 rows={1}
-                className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none resize-none py-3 px-2 text-sm focus:outline-none placeholder:text-muted-foreground disabled:opacity-50"
+                className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none resize-none py-3 px-2 text-sm focus:outline-none placeholder:text-muted-foreground/50 disabled:opacity-50"
               />
 
               <button
                 onClick={() => handleSend()}
                 disabled={!input.trim() || isStreaming}
-                className="shrink-0 p-2.5 rounded-xl bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 mb-0.5"
+                className="shrink-0 p-2.5 rounded-xl bg-foreground text-background hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 mb-0.5"
               >
                 {isStreaming
                   ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -326,7 +333,7 @@ export default function ChatPage() {
               </button>
             </div>
 
-            <p className="text-center text-[10px] text-muted-foreground mt-2">
+            <p className="text-center text-[10px] text-muted-foreground/50 mt-2">
               TaskMind can use your connected tools. Verify important results.
             </p>
           </div>

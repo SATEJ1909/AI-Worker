@@ -6,13 +6,15 @@ import { useState } from 'react';
 import { CreateWorkspaceModal } from './create-workspace-modal';
 import { 
   LayoutDashboard, 
-  Workflow, 
   Bot, 
   MessageSquare, 
   Plug, 
   Settings,
   LogOut,
-  Plus
+  Plus,
+  ChevronsLeft,
+  ChevronsRight,
+  Sparkles
 } from 'lucide-react';
 import { useWorkspace } from '@/context/workspace-context';
 
@@ -29,6 +31,7 @@ export function DashboardSidebar() {
   const router = useRouter();
   const { workspaces, activeWorkspace, setActiveWorkspaceId, isLoading } = useWorkspace();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -38,80 +41,122 @@ export function DashboardSidebar() {
 
   return (
     <>
-      <aside className="w-64 border-r border-border bg-card flex flex-col h-full shrink-0">
-      <div className="h-16 flex items-center px-6 border-b border-border">
-        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg">
-          <div className="w-8 h-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
-            <span className="text-background text-sm font-bold font-[family-name:var(--font-sora)]">T</span>
-          </div>
-          TaskMind
-        </Link>
-      </div>
-
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+      <aside className={`${collapsed ? 'w-[68px]' : 'w-64'} border-r border-border bg-card/50 backdrop-blur-xl flex flex-col h-full shrink-0 transition-all duration-300 ease-out relative`}>
         
-        <div className="space-y-1">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Main Menu</h3>
-          {navItems.map((item) => {
-          // Exact match for overview, prefix match for others to keep active state on sub-pages
-          const isActive = item.href === '/dashboard' 
-            ? pathname === item.href 
-            : pathname.startsWith(item.href);
-            
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive 
-                  ? 'bg-foreground text-background shadow-sm' 
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-              }`}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.name}
-            </Link>
-          );
-        })}
+        {/* ── Brand header ── */}
+        <div className={`h-16 flex items-center ${collapsed ? 'justify-center px-2' : 'px-5'} border-b border-border`}>
+          <Link href="/dashboard" className="flex items-center gap-2.5 font-bold text-lg group">
+            <div className="w-9 h-9 bg-gradient-to-br from-foreground to-foreground/80 rounded-xl flex items-center justify-center shrink-0 shadow-lg group-hover:shadow-foreground/10 transition-shadow">
+              <Sparkles className="w-4.5 h-4.5 text-background" />
+            </div>
+            {!collapsed && (
+              <span className="font-[family-name:var(--font-sora)] tracking-tight">
+                TaskMind
+              </span>
+            )}
+          </Link>
         </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center justify-between px-3 mb-2">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Workspaces</h3>
-            <button onClick={() => setIsCreateModalOpen(true)} className="p-1 hover:bg-secondary rounded-md text-muted-foreground transition-colors">
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
+        {/* ── Navigation ── */}
+        <nav className="flex-1 overflow-y-auto py-4 px-2.5 space-y-6">
           
-          {isLoading ? (
-            <div className="h-9 mx-3 animate-pulse bg-secondary rounded-lg"></div>
-          ) : (
-            workspaces.map(ws => (
-              <button
-                key={ws.id}
-                onClick={() => setActiveWorkspaceId(ws.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  activeWorkspace?.id === ws.id 
-                    ? 'bg-secondary text-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
-                }`}
-              >
-                <div className={`w-2 h-2 shrink-0 rounded-full ${activeWorkspace?.id === ws.id ? 'bg-green-500' : 'bg-transparent'}`} />
-                <span className="truncate">{ws.name}</span>
-              </button>
-            ))
-          )}
-        </div>
-      </nav>
+          <div className="space-y-1">
+            {!collapsed && (
+              <h3 className="px-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em] mb-3">
+                Menu
+              </h3>
+            )}
+            {navItems.map((item) => {
+              const isActive = item.href === '/dashboard' 
+                ? pathname === item.href 
+                : pathname.startsWith(item.href);
+              
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  title={collapsed ? item.name : undefined}
+                  className={`flex items-center gap-3 ${collapsed ? 'justify-center px-2' : 'px-3'} py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative ${
+                    isActive 
+                      ? 'bg-foreground text-background shadow-md shadow-foreground/5' 
+                      : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  }`}
+                >
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-foreground rounded-r-full -ml-2.5" />
+                  )}
+                  <item.icon className="w-[18px] h-[18px] shrink-0" />
+                  {!collapsed && item.name}
+                </Link>
+              );
+            })}
+          </div>
 
-      <div className="p-4 border-t border-border mt-auto">
-        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
-      </div>
-    </aside>
-    <CreateWorkspaceModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+          {/* ── Workspaces ── */}
+          <div className="space-y-1">
+            <div className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 mb-2`}>
+              {!collapsed && (
+                <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">
+                  Workspaces
+                </h3>
+              )}
+              <button 
+                onClick={() => setIsCreateModalOpen(true)} 
+                title="New workspace"
+                className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-all duration-200"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            
+            {isLoading ? (
+              <div className={`${collapsed ? 'mx-1' : 'mx-3'} space-y-1.5`}>
+                <div className="skeleton h-8 rounded-lg" />
+                <div className="skeleton h-8 rounded-lg opacity-60" />
+              </div>
+            ) : (
+              workspaces.map(ws => (
+                <button
+                  key={ws.id}
+                  onClick={() => setActiveWorkspaceId(ws.id)}
+                  title={collapsed ? ws.name : undefined}
+                  className={`w-full flex items-center gap-2.5 ${collapsed ? 'justify-center px-2' : 'px-3'} py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    activeWorkspace?.id === ws.id 
+                      ? 'bg-secondary text-foreground' 
+                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                  }`}
+                >
+                  <span className={`w-2 h-2 shrink-0 rounded-full transition-all duration-300 ${
+                    activeWorkspace?.id === ws.id ? 'bg-emerald-400 pulse-ring' : 'bg-muted-foreground/30'
+                  }`} />
+                  {!collapsed && (
+                    <span className="truncate text-xs">{ws.name}</span>
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        </nav>
+
+        {/* ── Footer ── */}
+        <div className="border-t border-border p-2.5 space-y-1">
+          <button 
+            onClick={() => setCollapsed(c => !c)} 
+            className={`flex items-center gap-3 ${collapsed ? 'justify-center px-2' : 'px-3'} py-2 w-full rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-all duration-200`}
+          >
+            {collapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
+            {!collapsed && <span className="text-xs">Collapse</span>}
+          </button>
+          <button 
+            onClick={handleLogout} 
+            className={`flex items-center gap-3 ${collapsed ? 'justify-center px-2' : 'px-3'} py-2 w-full rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all duration-200`}
+          >
+            <LogOut className="w-4 h-4" />
+            {!collapsed && <span className="text-xs">Logout</span>}
+          </button>
+        </div>
+      </aside>
+      <CreateWorkspaceModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </>
   );
 }

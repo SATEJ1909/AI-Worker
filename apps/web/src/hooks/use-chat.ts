@@ -124,6 +124,8 @@ export function useChat(workspaceId: string | undefined) {
   const [isLoadingConversations, setIsLoadingConversations] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const pendingTextRef = useRef<string>('');
 
   // ── Fetch conversations ───────────────────────────────────────────────────
 
@@ -292,13 +294,24 @@ export function useChat(workspaceId: string | undefined) {
 
           // ── Handle each event type ───────────────────────────────────────
           if (event.type === 'text') {
-            setMessages(prev =>
-              prev.map(m =>
-                m.id === assistantMsgId
-                  ? { ...m, content: m.content + event.content }
-                  : m,
-              ),
-            );
+            // Batch text updates via RAF to avoid per-token re-renders
+            pendingTextRef.current += event.content;
+            if (rafRef.current === null) {
+              rafRef.current = requestAnimationFrame(() => {
+                const chunk = pendingTextRef.current;
+                pendingTextRef.current = '';
+                rafRef.current = null;
+                if (chunk) {
+                  setMessages(prev =>
+                    prev.map(m =>
+                      m.id === assistantMsgId
+                        ? { ...m, content: m.content + chunk }
+                        : m,
+                    ),
+                  );
+                }
+              });
+            }
           } else if (event.type === 'tool_start') {
             const entry: ToolCallEntry = {
               id: makeId(),
@@ -361,10 +374,20 @@ export function useChat(workspaceId: string | undefined) {
         ),
       );
     } finally {
+      // Flush any remaining buffered text
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      const remaining = pendingTextRef.current;
+      pendingTextRef.current = '';
+
       setIsStreaming(false);
       setMessages(prev =>
         prev.map(m =>
-          m.id === assistantMsgId ? { ...m, isStreaming: false } : m,
+          m.id === assistantMsgId
+            ? { ...m, content: m.content + remaining, isStreaming: false }
+            : m,
         ),
       );
       // Refresh conversation list so the title updates
