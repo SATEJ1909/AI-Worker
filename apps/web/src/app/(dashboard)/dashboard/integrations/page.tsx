@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { GitBranch, Plus, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { GitBranch, Plus, CheckCircle2, AlertCircle, Lock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useWorkspace } from '@/context/workspace-context';
+import { CardGridSkeleton, PageHeaderSkeleton } from '@/components/ui/skeleton-loaders';
 
 const INTEGRATION_PROVIDERS = [
   {
@@ -11,36 +12,48 @@ const INTEGRATION_PROVIDERS = [
     name: 'GitHub',
     description: 'Allow your agents to read repositories, create pull requests, and review code.',
     icon: GitBranch,
+    color: 'text-white',
+    bg: 'bg-white/10',
     available: true,
   },
   {
     providerId: 'slack',
     name: 'Slack',
     description: 'Monitor channels and send messages automatically.',
+    color: 'text-[#E01E5A]',
+    bg: 'bg-[#E01E5A]/10',
     available: false,
   },
   {
     providerId: 'notion',
     name: 'Notion',
     description: 'Read documentation and create new pages on the fly.',
+    color: 'text-white',
+    bg: 'bg-white/10',
     available: false,
   },
   {
     providerId: 'linear',
     name: 'Linear',
     description: 'Manage issues and update ticket statuses based on commits.',
+    color: 'text-[#5E6AD2]',
+    bg: 'bg-[#5E6AD2]/10',
     available: false,
   },
   {
     providerId: 'gmail',
     name: 'Gmail',
     description: 'Read, organize, and respond to emails automatically.',
+    color: 'text-[#EA4335]',
+    bg: 'bg-[#EA4335]/10',
     available: false,
   },
   {
     providerId: 'drive',
     name: 'Google Drive',
     description: 'Access documents, spreadsheets, and presentations.',
+    color: 'text-[#4285F4]',
+    bg: 'bg-[#4285F4]/10',
     available: false,
   },
 ];
@@ -78,8 +91,9 @@ export default function IntegrationsPage() {
 
   if (isLoading) {
     return (
-      <div className="p-8 max-w-6xl mx-auto w-full flex justify-center py-12">
-        <div className="w-8 h-8 rounded-full border-4 border-foreground border-t-transparent animate-spin"></div>
+      <div className="p-8 max-w-6xl mx-auto w-full space-y-8">
+        <PageHeaderSkeleton />
+        <CardGridSkeleton count={6} />
       </div>
     );
   }
@@ -101,11 +115,13 @@ export default function IntegrationsPage() {
   return (
     <div className="p-8 max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Integrations</h1>
-        <p className="text-muted-foreground mt-1">Connect your tools to give your AI agents context for {activeWorkspace.name}.</p>
+        <h1 className="text-3xl font-bold tracking-tight font-[family-name:var(--font-sora)]">Integrations</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Connect your tools to give your AI agents context for <span className="text-foreground font-medium">{activeWorkspace.name}</span>.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {INTEGRATION_PROVIDERS.map((provider) => {
           const isConnected = activeWorkspace?.integrations?.some((i: any) => i.provider === provider.providerId);
           const isConnecting = connectingProvider === provider.providerId;
@@ -113,64 +129,66 @@ export default function IntegrationsPage() {
 
           if (!provider.available) {
             return (
-              <div key={provider.providerId} className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col h-full opacity-60">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center text-muted-foreground font-bold font-[family-name:var(--font-sora)]">
+              <div key={provider.providerId} className="glass gradient-border rounded-xl p-6 flex flex-col h-full opacity-50">
+                <div className="flex items-start justify-between mb-5">
+                  <div className={`w-12 h-12 ${provider.bg} rounded-xl flex items-center justify-center font-bold font-[family-name:var(--font-sora)] ${provider.color}`}>
                     {provider.name[0]}
                   </div>
-                  <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary px-2 py-1 rounded-full">
-                    Coming Soon
+                  <span className="flex items-center gap-1.5 text-[10px] font-semibold text-muted-foreground bg-secondary px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    <Lock className="w-3 h-3" />
+                    Soon
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold mb-2 text-muted-foreground">{provider.name}</h3>
-                <p className="text-sm text-muted-foreground mb-6 flex-1">
+                <h3 className="text-base font-bold mb-1.5 text-muted-foreground">{provider.name}</h3>
+                <p className="text-sm text-muted-foreground/70 mb-6 flex-1 leading-relaxed">
                   {provider.description}
                 </p>
 
-                <button disabled className="w-full bg-secondary/50 text-muted-foreground px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed">
-                  Request Access
+                <button disabled className="w-full bg-secondary/50 text-muted-foreground/50 px-4 py-2.5 rounded-xl text-sm font-medium cursor-not-allowed">
+                  Coming Soon
                 </button>
               </div>
             );
           }
 
           return (
-            <div key={provider.providerId} className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col h-full">
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
-                  {Icon ? <Icon className="w-6 h-6 text-foreground" /> : <div className="text-foreground font-bold font-[family-name:var(--font-sora)]">{provider.name[0]}</div>}
+            <div key={provider.providerId} className="glass gradient-border rounded-xl p-6 flex flex-col h-full group hover:bg-white/[0.04] transition-all duration-300">
+              <div className="flex items-start justify-between mb-5">
+                <div className={`w-12 h-12 ${provider.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  {Icon ? <Icon className={`w-6 h-6 ${provider.color}`} /> : <div className={`font-bold font-[family-name:var(--font-sora)] ${provider.color}`}>{provider.name[0]}</div>}
                 </div>
                 {isConnected ? (
-                  <span className="flex items-center gap-1 text-xs font-medium text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
+                  <span className="flex items-center gap-1.5 text-[10px] font-semibold text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
                     <CheckCircle2 className="w-3 h-3" /> Connected
                   </span>
                 ) : isConnecting ? (
-                  <div className="w-4 h-4 rounded-full border-2 border-foreground border-t-transparent animate-spin"></div>
+                  <div className="w-5 h-5 rounded-full border-2 border-foreground/60 border-t-transparent animate-spin" />
                 ) : (
-                  <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary px-2 py-1 rounded-full">
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground bg-secondary px-2.5 py-1 rounded-full uppercase tracking-wider">
                     Disconnected
                   </span>
                 )}
               </div>
 
-              <h3 className="text-lg font-bold mb-2">{provider.name}</h3>
-              <p className="text-sm text-muted-foreground mb-6 flex-1">
+              <h3 className="text-base font-bold mb-1.5">{provider.name}</h3>
+              <p className="text-sm text-muted-foreground mb-6 flex-1 leading-relaxed">
                 {provider.description}
               </p>
 
               {isConnected ? (
                 <Link
                   href={`/dashboard/integrations/${provider.providerId}`}
-                  className="w-full bg-secondary text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-secondary text-foreground px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-secondary/80 transition-all duration-200 flex items-center justify-center gap-2 group/btn"
                 >
                   Manage Integration
+                  <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover/btn:opacity-100 -translate-x-1 group-hover/btn:translate-x-0 transition-all duration-200" />
                 </Link>
               ) : (
                 <button
                   onClick={() => handleConnectProvider(provider.providerId)}
                   disabled={isConnecting}
-                  className="w-full bg-foreground text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors flex items-center justify-center gap-2 disabled:cursor-wait disabled:opacity-80"
+                  className="w-full bg-foreground text-background px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 disabled:cursor-wait disabled:opacity-60 shadow-lg shadow-foreground/5"
                 >
                   <Plus className="w-4 h-4" />
                   {isConnecting ? 'Connecting...' : `Connect ${provider.name}`}

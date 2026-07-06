@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, Plus, MoreVertical, Search, Zap, Code, FileText } from 'lucide-react';
+import { Bot, Plus, MoreVertical, Search, Zap, Code, FileText, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 // Dummy Data
@@ -14,29 +14,30 @@ export default function AgentsPage() {
   return (
     <div className="p-8 max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Your Agents</h1>
-          <p className="text-muted-foreground mt-1">Manage and monitor your AI workforce.</p>
+          <h1 className="text-3xl font-bold tracking-tight font-[family-name:var(--font-sora)]">Your Agents</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Manage and monitor your AI workforce.</p>
         </div>
-        <Link href="/dashboard/agents/create" className="bg-foreground text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors flex items-center gap-2">
+        <Link href="/dashboard/agents/create" className="bg-foreground text-background px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all duration-200 flex items-center gap-2 shadow-lg shadow-foreground/5">
           <Plus className="w-4 h-4" />
           Create Agent
         </Link>
       </div>
 
-      <div className="flex items-center gap-4 mb-6">
+      {/* ── Search & Filter ── */}
+      <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input 
             type="text" 
             placeholder="Search agents..." 
-            className="w-full bg-card border border-border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+            className="w-full bg-secondary/30 border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all duration-200 placeholder:text-muted-foreground/60"
           />
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">Status:</span>
-          <select className="bg-card border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20">
+          <span className="text-muted-foreground text-xs">Status:</span>
+          <select className="bg-secondary/30 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 appearance-none cursor-pointer">
             <option>All</option>
             <option>Active</option>
             <option>Paused</option>
@@ -44,28 +45,32 @@ export default function AgentsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* ── Agent Grid ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {AGENTS.map((agent) => (
           <Link href={`/dashboard/agents/${agent.id}`} key={agent.id} className="block group">
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:border-foreground/50 transition-colors h-full flex flex-col">
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
-                  <agent.icon className="w-6 h-6 text-foreground" />
+            <div className="glass gradient-border rounded-xl p-6 hover:bg-white/[0.04] transition-all duration-300 h-full flex flex-col">
+              <div className="flex justify-between items-start mb-5">
+                <div className="w-12 h-12 bg-foreground/5 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <agent.icon className="w-6 h-6 text-foreground/60" />
                 </div>
-                <button className="text-muted-foreground hover:text-foreground p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.preventDefault()}>
-                  <MoreVertical className="w-5 h-5" />
+                <button 
+                  className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-secondary transition-all duration-200" 
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <MoreVertical className="w-4 h-4" />
                 </button>
               </div>
               
-              <h3 className="text-lg font-bold mb-1 group-hover:text-primary transition-colors">{agent.name}</h3>
-              <p className="text-sm text-muted-foreground mb-4">{agent.role}</p>
+              <h3 className="text-base font-bold mb-1 group-hover:text-foreground transition-colors">{agent.name}</h3>
+              <p className="text-sm text-muted-foreground">{agent.role}</p>
               
-              <div className="mt-auto pt-4 border-t border-border flex items-center justify-between text-xs">
-                <span className={`flex items-center gap-1.5 font-medium ${agent.status === 'Active' ? 'text-green-500' : 'text-muted-foreground'}`}>
-                  <span className={`w-2 h-2 rounded-full ${agent.status === 'Active' ? 'bg-green-500' : 'bg-muted-foreground'}`}></span>
+              <div className="mt-auto pt-5 border-t border-border flex items-center justify-between text-xs">
+                <span className={`flex items-center gap-2 font-semibold ${agent.status === 'Active' ? 'text-emerald-400' : 'text-muted-foreground'}`}>
+                  <span className={`w-2 h-2 rounded-full ${agent.status === 'Active' ? 'bg-emerald-400 pulse-ring' : 'bg-muted-foreground/50'}`} />
                   {agent.status}
                 </span>
-                <span className="flex items-center gap-1 text-muted-foreground">
+                <span className="flex items-center gap-1.5 text-muted-foreground">
                   <Zap className="w-3 h-3" /> {agent.workflows} workflows
                 </span>
               </div>
@@ -73,12 +78,13 @@ export default function AgentsPage() {
           </Link>
         ))}
         
-        <Link href="/dashboard/agents/create" className="block">
-          <div className="border-2 border-dashed border-border rounded-xl p-6 shadow-sm hover:bg-secondary/50 hover:border-foreground/30 transition-colors h-full flex flex-col items-center justify-center text-center min-h-[200px]">
-            <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mb-4">
-              <Plus className="w-6 h-6 text-foreground" />
+        {/* ── Create New Agent Card ── */}
+        <Link href="/dashboard/agents/create" className="block group">
+          <div className="border border-dashed border-border rounded-xl p-6 hover:bg-white/[0.02] hover:border-foreground/20 transition-all duration-300 h-full flex flex-col items-center justify-center text-center min-h-[220px]">
+            <div className="w-12 h-12 bg-foreground/5 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+              <Plus className="w-6 h-6 text-foreground/40" />
             </div>
-            <h3 className="text-lg font-medium mb-1">Create new agent</h3>
+            <h3 className="text-base font-semibold mb-1">Create new agent</h3>
             <p className="text-sm text-muted-foreground">Add a new AI worker to your team</p>
           </div>
         </Link>

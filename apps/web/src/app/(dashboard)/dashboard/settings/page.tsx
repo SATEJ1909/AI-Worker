@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Building, LogOut, Save, AlertCircle, CheckCircle2, Loader2, Trash2 } from 'lucide-react';
+import { User, Building, LogOut, Save, AlertCircle, CheckCircle2, Loader2, Trash2, Shield } from 'lucide-react';
 import { useWorkspace } from '@/context/workspace-context';
 
 const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
@@ -99,8 +99,13 @@ export default function SettingsPage() {
 
   if (loading || workspaceLoading) {
     return (
-      <div className="p-8 max-w-4xl mx-auto flex justify-center py-20">
-        <div className="w-8 h-8 rounded-full border-4 border-foreground border-t-transparent animate-spin"></div>
+      <div className="p-8 max-w-4xl mx-auto w-full space-y-6">
+        <div className="space-y-2">
+          <div className="skeleton h-8 w-32" />
+          <div className="skeleton h-4 w-64" />
+        </div>
+        <div className="skeleton h-48 rounded-xl" />
+        <div className="skeleton h-64 rounded-xl" />
       </div>
     );
   }
@@ -109,85 +114,95 @@ export default function SettingsPage() {
     <div className="p-8 max-w-4xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage your account and workspace preferences.</p>
+        <h1 className="text-3xl font-bold tracking-tight font-[family-name:var(--font-sora)]">Settings</h1>
+        <p className="text-muted-foreground mt-1 text-sm">Manage your account and workspace preferences.</p>
       </div>
 
+      {/* ── Toast message ── */}
       {message && (
-        <div className={`p-4 rounded-xl flex items-start gap-3 ${
-          message.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-destructive/10 text-destructive border border-destructive/20'
+        <div className={`p-4 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300 ${
+          message.type === 'success' 
+            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+            : 'bg-destructive/10 text-destructive border border-destructive/20'
         }`}>
-          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 mt-0.5" /> : <AlertCircle className="w-5 h-5 mt-0.5" />}
+          {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 mt-0.5 shrink-0" /> : <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />}
           <p className="font-medium text-sm mt-0.5">{message.text}</p>
         </div>
       )}
 
       <div className="space-y-6">
         
-        {/* Profile Settings */}
-        <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-border bg-secondary/20">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-              <User className="w-5 h-5" /> Profile Information
-            </h2>
-          </div>
-          <div className="p-6 space-y-4">
+        {/* ── Profile Settings ── */}
+        <div className="glass gradient-border rounded-xl overflow-hidden">
+          <div className="p-5 border-b border-border flex items-center gap-3">
+            <div className="w-9 h-9 bg-foreground/5 rounded-lg flex items-center justify-center">
+              <User className="w-4 h-4 text-foreground/60" />
+            </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1.5">Name</label>
+              <h2 className="text-sm font-bold">Profile Information</h2>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Synced from your auth provider</p>
+            </div>
+          </div>
+          <div className="p-5 space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Name</label>
               <input 
                 type="text" 
                 value={profile?.name || ''} 
                 readOnly
-                className="w-full max-w-md bg-secondary/50 border border-border rounded-lg px-3 py-2 text-sm opacity-70 cursor-not-allowed"
+                className="w-full max-w-md bg-secondary/50 border border-border rounded-xl px-4 py-2.5 text-sm opacity-70 cursor-not-allowed focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1.5">Email</label>
+              <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Email</label>
               <input 
                 type="email" 
                 value={profile?.email || ''} 
                 readOnly
-                className="w-full max-w-md bg-secondary/50 border border-border rounded-lg px-3 py-2 text-sm opacity-70 cursor-not-allowed"
+                className="w-full max-w-md bg-secondary/50 border border-border rounded-xl px-4 py-2.5 text-sm opacity-70 cursor-not-allowed focus:outline-none"
               />
             </div>
-            <p className="text-xs text-muted-foreground">Profile information is synced from your auth provider.</p>
           </div>
         </div>
 
-        {/* Workspace Settings */}
+        {/* ── Workspace Settings ── */}
         {activeWorkspace && (
-          <form onSubmit={handleUpdateWorkspace} className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-border bg-secondary/20">
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                <Building className="w-5 h-5" /> Workspace Settings
-              </h2>
-            </div>
-            <div className="p-6 space-y-4">
+          <form onSubmit={handleUpdateWorkspace} className="glass gradient-border rounded-xl overflow-hidden">
+            <div className="p-5 border-b border-border flex items-center gap-3">
+              <div className="w-9 h-9 bg-foreground/5 rounded-lg flex items-center justify-center">
+                <Building className="w-4 h-4 text-foreground/60" />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1.5">Workspace Name</label>
+                <h2 className="text-sm font-bold">Workspace Settings</h2>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Configure your workspace</p>
+              </div>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Workspace Name</label>
                 <input 
                   type="text" 
                   value={workspaceName} 
                   onChange={(e) => setWorkspaceName(e.target.value)}
-                  className="w-full max-w-md bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/20"
+                  className="w-full max-w-md bg-secondary/30 border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1.5">Workspace ID</label>
+                <label className="block text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Workspace ID</label>
                 <input 
                   type="text" 
                   value={activeWorkspace.id} 
                   readOnly
-                  className="w-full max-w-md bg-secondary/50 border border-border rounded-lg px-3 py-2 text-sm font-mono text-xs opacity-70 cursor-not-allowed"
+                  className="w-full max-w-md bg-secondary/50 border border-border rounded-xl px-4 py-2.5 text-xs font-mono opacity-70 cursor-not-allowed focus:outline-none"
                 />
               </div>
-              <div className="pt-4">
+              <div className="pt-2">
                 <button 
                   type="submit" 
                   disabled={saving}
-                  className="bg-foreground text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors flex items-center gap-2"
+                  className="bg-foreground text-background px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all duration-200 flex items-center gap-2 shadow-lg shadow-foreground/5 disabled:opacity-60"
                 >
-                  {saving ? <div className="w-4 h-4 rounded-full border-2 border-background border-t-transparent animate-spin"></div> : <Save className="w-4 h-4" />}
+                  {saving ? <div className="w-4 h-4 rounded-full border-2 border-background border-t-transparent animate-spin" /> : <Save className="w-4 h-4" />}
                   Save Changes
                 </button>
               </div>
@@ -195,23 +210,26 @@ export default function SettingsPage() {
           </form>
         )}
 
-        {/* Danger Zone */}
-        <div className="bg-card border border-destructive/20 rounded-xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-destructive/20 bg-destructive/5">
-            <h2 className="text-lg font-bold text-destructive">Danger Zone</h2>
+        {/* ── Danger Zone ── */}
+        <div className="rounded-xl overflow-hidden border border-red-500/20">
+          <div className="p-5 border-b border-red-500/20 bg-red-500/5 flex items-center gap-3">
+            <div className="w-9 h-9 bg-red-500/10 rounded-lg flex items-center justify-center">
+              <Shield className="w-4 h-4 text-red-400" />
+            </div>
+            <h2 className="text-sm font-bold text-red-400">Danger Zone</h2>
           </div>
-          <div className="p-6 space-y-6">
+          <div className="p-5 space-y-5 bg-red-500/[0.02]">
             
             {activeWorkspace && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border">
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">Delete Workspace</h3>
-                  <p className="text-sm text-muted-foreground mt-1">Permanently remove this workspace and all its data. This action is irreversible.</p>
+                  <h3 className="text-sm font-bold">Delete Workspace</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Permanently remove this workspace and all its data.</p>
                 </div>
                 <button 
                   onClick={handleDeleteWorkspace}
                   disabled={isDeleting}
-                  className="shrink-0 bg-destructive/10 text-destructive px-4 py-2 rounded-lg text-sm font-medium hover:bg-destructive/20 transition-colors flex items-center gap-2 disabled:opacity-80 disabled:cursor-wait"
+                  className="shrink-0 bg-red-500/10 text-red-400 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-500/20 transition-all duration-200 flex items-center gap-2 disabled:opacity-60 disabled:cursor-wait border border-red-500/20"
                 >
                   {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                   Delete Workspace
@@ -221,12 +239,12 @@ export default function SettingsPage() {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-bold text-foreground">Sign Out</h3>
-                <p className="text-sm text-muted-foreground mt-1">Log out of your current session on this device.</p>
+                <h3 className="text-sm font-bold">Sign Out</h3>
+                <p className="text-sm text-muted-foreground mt-1">Log out of your current session.</p>
               </div>
               <button 
                 onClick={handleLogout}
-                className="shrink-0 bg-secondary text-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/80 transition-colors flex items-center gap-2"
+                className="shrink-0 bg-secondary text-foreground px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-secondary/80 transition-all duration-200 flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out

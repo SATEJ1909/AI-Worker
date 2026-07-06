@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
 
 export interface Integration {
   id: string;
@@ -147,29 +147,32 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     fetchWorkspaces();
   }, []);
 
-  const setActiveWorkspaceId = (id: string) => {
+  const setActiveWorkspaceId = useCallback((id: string) => {
     const ws = workspaces.find(w => w.id === id);
     if (ws) {
       setActiveWorkspaceIdState(id);
       localStorage.setItem('activeWorkspaceId', id);
     }
-  };
+  }, [workspaces]);
 
-  const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId) || null;
+  const activeWorkspace = useMemo(
+    () => workspaces.find(w => w.id === activeWorkspaceId) || null,
+    [workspaces, activeWorkspaceId]
+  );
+
+  const contextValue = useMemo(() => ({
+    workspaces,
+    activeWorkspace,
+    isLoading,
+    error,
+    setActiveWorkspaceId,
+    refreshWorkspaces: fetchWorkspaces,
+    createWorkspace,
+    deleteWorkspace
+  }), [workspaces, activeWorkspace, isLoading, error, setActiveWorkspaceId, fetchWorkspaces, createWorkspace, deleteWorkspace]);
 
   return (
-    <WorkspaceContext.Provider 
-      value={{ 
-        workspaces, 
-        activeWorkspace, 
-        isLoading, 
-        error, 
-        setActiveWorkspaceId, 
-        refreshWorkspaces: fetchWorkspaces,
-        createWorkspace,
-        deleteWorkspace
-      }}
-    >
+    <WorkspaceContext.Provider value={contextValue}>
       {children}
     </WorkspaceContext.Provider>
   );

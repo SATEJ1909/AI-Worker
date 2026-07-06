@@ -8,9 +8,9 @@ export default function DashboardLayout({
 }) {
   return (
     <WorkspaceProvider>
-      <div className="flex h-screen overflow-hidden bg-background text-foreground font-[family-name:var(--font-inter)]">
+      <div className="dashboard-dark flex h-screen overflow-hidden bg-background text-foreground font-[family-name:var(--font-inter)]">
         <DashboardSidebar />
-        <main className="flex-1 overflow-y-auto relative flex flex-col">
+        <main className="flex-1 overflow-y-auto relative flex flex-col dot-grid">
           {children}
         </main>
       </div>
