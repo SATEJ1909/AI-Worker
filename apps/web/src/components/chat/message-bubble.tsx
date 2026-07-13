@@ -154,10 +154,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
         {/* Text bubble — only render if there's content or it's streaming */}
         {(message.content || message.isStreaming) && (
-          <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed border shadow-sm ${
+          <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
             isUser
-              ? 'bg-foreground/10 border-foreground/10 text-foreground rounded-tr-sm'
-              : 'glass text-foreground rounded-tl-sm'
+              ? 'bg-white/[0.06] border border-white/[0.06] text-foreground rounded-tr-sm'
+              : 'surface text-foreground rounded-tl-sm'
           }`}>
             {isUser ? (
               <p className="whitespace-pre-wrap">{message.content}</p>

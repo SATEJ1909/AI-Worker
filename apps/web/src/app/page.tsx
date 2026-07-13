@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAccessToken } from '@/lib/api-client';
 
 export default function Home() {
   const router = useRouter();
@@ -9,7 +10,7 @@ export default function Home() {
 
   useEffect(() => {
     setMounted(true);
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (token) {
       router.push('/dashboard');
     } else {
