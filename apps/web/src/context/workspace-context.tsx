@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
+import { apiFetch, getAccessToken, clearTokens } from '@/lib/api-client';
 
 export interface Integration {
   id: string;
@@ -31,6 +32,7 @@ interface WorkspaceContextType {
 
 const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
 
+
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
@@ -44,25 +46,13 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
       
-      const token = localStorage.getItem('token');
+      const token = getAccessToken();
       if (!token) {
         setIsLoading(false);
         return;
       }
 
-      const res = await fetch(`${API_BASE}/workspaces`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (res.status === 401) {
-        // Token expired or invalid — clear auth state and redirect to login
-        localStorage.removeItem('token');
-        localStorage.removeItem('activeWorkspaceId');
-        window.location.href = '/sign-in';
-        return;
-      }
+      const res = await apiFetch(`${API_BASE}/workspaces`);
 
       if (!res.ok) {
         throw new Error(`Failed to fetch workspaces (${res.status})`);
@@ -99,13 +89,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   };
 
   const createWorkspace = async (name: string): Promise<Workspace> => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (!token) throw new Error('Not authenticated');
 
-    const res = await fetch(`${API_BASE}/workspaces`, {
+    const res = await apiFetch(`${API_BASE}/workspaces`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ name })
@@ -121,14 +110,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteWorkspace = async (id: string): Promise<void> => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (!token) throw new Error('Not authenticated');
 
-    const res = await fetch(`${API_BASE}/workspaces/${id}`, {
+    const res = await apiFetch(`${API_BASE}/workspaces/${id}`, {
       method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      }
     });
 
     const data = await res.json();

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import { apiFetch, getAccessToken, API_BASE } from '@/lib/api-client';
 
 // ─── Types (mirror AgentStreamEvent from backend) ──────────────────────────
 
@@ -48,12 +49,6 @@ type AgentStreamEvent =
   | { type: 'done'; fullContent: string };
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
-
-const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
-
-function getToken(): string {
-  return localStorage.getItem('token') ?? '';
-}
 
 function makeId() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
@@ -133,9 +128,7 @@ export function useChat(workspaceId: string | undefined) {
     if (!workspaceId) return;
     setIsLoadingConversations(true);
     try {
-      const res = await fetch(`${API_BASE}/workspaces/${workspaceId}/chat`, {
-        headers: { Authorization: `Bearer ${getToken()}` },
-      });
+      const res = await apiFetch(`${API_BASE}/workspaces/${workspaceId}/chat`);
       const data = await res.json();
       if (data.success) setConversations(data.conversations ?? []);
     } catch (err) {
@@ -152,9 +145,7 @@ export function useChat(workspaceId: string | undefined) {
     setIsLoadingMessages(true);
     setActiveConversationId(conversationId);
     try {
-      const res = await fetch(`${API_BASE}/workspaces/${workspaceId}/chat/${conversationId}`, {
-        headers: { Authorization: `Bearer ${getToken()}` },
-      });
+      const res = await apiFetch(`${API_BASE}/workspaces/${workspaceId}/chat/${conversationId}`);
       const data = await res.json();
       if (data.success && data.conversation) {
         const msgs = dbMessagesToChatMessages(data.conversation.messages ?? []);
@@ -172,10 +163,9 @@ export function useChat(workspaceId: string | undefined) {
   const createConversation = useCallback(async (): Promise<string | null> => {
     if (!workspaceId) return null;
     try {
-      const res = await fetch(`${API_BASE}/workspaces/${workspaceId}/chat`, {
+      const res = await apiFetch(`${API_BASE}/workspaces/${workspaceId}/chat`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${getToken()}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({}),
@@ -196,9 +186,8 @@ export function useChat(workspaceId: string | undefined) {
   const deleteConversation = useCallback(async (conversationId: string) => {
     if (!workspaceId) return;
     try {
-      await fetch(`${API_BASE}/workspaces/${workspaceId}/chat/${conversationId}`, {
+      await apiFetch(`${API_BASE}/workspaces/${workspaceId}/chat/${conversationId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${getToken()}` },
       });
       if (activeConversationId === conversationId) {
         setActiveConversationId(null);
@@ -256,7 +245,7 @@ export function useChat(workspaceId: string | undefined) {
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${getToken()}`,
+            Authorization: `Bearer ${getAccessToken()}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ content: content.trim() }),

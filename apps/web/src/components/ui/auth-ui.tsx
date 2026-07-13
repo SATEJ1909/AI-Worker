@@ -13,6 +13,8 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { setTokens } from '@/lib/api-client';
+
 const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1`;
 
 export interface TypewriterProps {
@@ -201,7 +203,7 @@ function SignInForm() {
       });
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem("token", data.token);
+        setTokens(data.token, data.refreshToken || '');
         window.location.href = "/dashboard";
       } else {
         alert("Login failed. Please check your credentials.");
@@ -254,7 +256,7 @@ function SignUpForm() {
       });
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem("token", data.token);
+        setTokens(data.token, data.refreshToken || '');
         window.location.href = "/dashboard";
       } else {
         alert("Signup failed.");

@@ -5,6 +5,7 @@ import { GitBranch, ArrowLeft, RefreshCw, Trash2, FolderGit2, AlertCircle } from
 import Link from 'next/link';
 import { useWorkspace } from '@/context/workspace-context';
 import { useRouter } from 'next/navigation';
+import { apiFetch } from '@/lib/api-client';
 
 const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -42,13 +43,9 @@ export default function ConnectedGithubPage() {
     setLoading(true);
     setError(null);
     try {
-      const headers = {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      };
-
       const [profileRes, reposRes] = await Promise.all([
-        fetch(`${API_HOST}/api/integrations/github/profile?workspaceId=${activeWorkspace.id}`, { headers }),
-        fetch(`${API_HOST}/api/integrations/github/repos?workspaceId=${activeWorkspace.id}`, { headers })
+        apiFetch(`${API_HOST}/api/integrations/github/profile?workspaceId=${activeWorkspace.id}`),
+        apiFetch(`${API_HOST}/api/integrations/github/repos?workspaceId=${activeWorkspace.id}`)
       ]);
 
       if (!profileRes.ok || !reposRes.ok) {
@@ -72,16 +69,28 @@ export default function ConnectedGithubPage() {
     }
   };
 
+  const handleReconnect = async () => {
+    if (!activeWorkspace) return;
+    try {
+      const res = await apiFetch(`${API_HOST}/api/integrations/github/connect?workspaceId=${activeWorkspace.id}`);
+      const data = await res.json();
+      if (data.success && data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.message || 'Failed to start GitHub reconnect');
+      }
+    } catch (err) {
+      alert('Failed to start GitHub reconnect');
+    }
+  };
+
   const handleDisconnect = async () => {
     if (!activeWorkspace) return;
     if (!confirm('Are you sure you want to disconnect GitHub? Your agents will lose access to all repositories.')) return;
 
     try {
-      const res = await fetch(`${API_HOST}/api/integrations/github/disconnect?workspaceId=${activeWorkspace.id}`, {
+      const res = await apiFetch(`${API_HOST}/api/integrations/github/disconnect?workspaceId=${activeWorkspace.id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
       });
       if (res.ok) {
         await refreshWorkspaces();
@@ -133,11 +142,27 @@ export default function ConnectedGithubPage() {
       </div>
 
       {error && (
-        <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
-          <div>
-            <h4 className="font-semibold">Error loading data</h4>
-            <p className="text-sm mt-1">{error}</p>
+        <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+            <div>
+              <h4 className="font-semibold">Error loading data</h4>
+              <p className="text-sm mt-1">{error}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+            <button
+              onClick={handleReconnect}
+              className="flex-1 sm:flex-initial bg-foreground text-background px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" /> Reconnect GitHub
+            </button>
+            <button
+              onClick={handleDisconnect}
+              className="flex-1 sm:flex-initial bg-destructive/20 text-destructive px-4 py-2 rounded-lg text-sm font-semibold hover:bg-destructive/30 transition-colors flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" /> Disconnect
+            </button>
           </div>
         </div>
       )}
@@ -209,6 +234,29 @@ export default function ConnectedGithubPage() {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {!profile && !error && (
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h4 className="font-semibold text-foreground">GitHub Integration Actions</h4>
+            <p className="text-sm text-muted-foreground mt-1">If your connection is out of sync or tokens expired, reconnect or disconnect below.</p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
+            <button
+              onClick={handleReconnect}
+              className="flex-1 sm:flex-initial bg-foreground text-background px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" /> Reconnect GitHub
+            </button>
+            <button
+              onClick={handleDisconnect}
+              className="flex-1 sm:flex-initial bg-destructive/20 text-destructive px-4 py-2 rounded-lg text-sm font-semibold hover:bg-destructive/30 transition-colors flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" /> Disconnect GitHub
+            </button>
+          </div>
         </div>
       )}
     </div>

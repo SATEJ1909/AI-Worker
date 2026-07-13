@@ -38,10 +38,10 @@ function ConversationItem({
 
   return (
     <div
-      className={`group relative flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+      className={`group relative flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150 ${
         isActive
-          ? 'bg-foreground/10 border border-foreground/10 text-foreground'
-          : 'hover:bg-secondary border border-transparent text-muted-foreground hover:text-foreground'
+          ? 'bg-white/[0.06] text-foreground'
+          : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
       }`}
       onClick={onSelect}
       onMouseEnter={() => setShowDelete(true)}
@@ -74,7 +74,7 @@ function TypingIndicator() {
       <div className="w-8 h-8 rounded-full bg-foreground/10 border border-foreground/10 flex items-center justify-center shrink-0 text-xs font-bold text-muted-foreground">
         AI
       </div>
-      <div className="glass px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5">
+      <div className="surface px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5">
         <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:0ms]" />
         <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:150ms]" />
         <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:300ms]" />
@@ -112,7 +112,7 @@ function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
           <button
             key={p}
             onClick={() => onPromptClick(p)}
-            className="text-left px-4 py-3 rounded-xl border border-border glass hover:bg-white/[0.04] transition-all duration-200 text-xs text-muted-foreground hover:text-foreground group"
+            className="text-left px-4 py-3 rounded-lg border border-border hover:bg-white/[0.03] transition-colors duration-150 text-xs text-muted-foreground hover:text-foreground group"
           >
             <span className="text-foreground/40 group-hover:text-foreground/60 mr-1.5">›</span>
             {p}
@@ -309,7 +309,7 @@ export default function ChatPage() {
         {/* Input area */}
         <div className="px-4 pb-4 pt-2 bg-background shrink-0">
           <div className="max-w-3xl mx-auto">
-            <div className="relative flex items-end gap-2 glass rounded-2xl p-2 focus-within:ring-1 focus-within:ring-foreground/10 transition-all duration-200">
+            <div className="relative flex items-end gap-2 border border-border rounded-xl p-2 focus-within:ring-1 focus-within:ring-foreground/10 focus-within:border-foreground/15 transition-all duration-150">
               <textarea
                 ref={textareaRef}
                 value={input}
