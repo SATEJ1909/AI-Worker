@@ -8,6 +8,7 @@ import {
     getGitHubStatusHandler,
     githubCallbackHandler,
 } from './github.controller.js'
+import { githubWebhookHandler } from './github.webhook.controller.js'
 
 const GitHubRouter: express.Router = Router();
 
@@ -17,5 +18,6 @@ GitHubRouter.get('/status', isAuthenticated, getGitHubStatusHandler);
 GitHubRouter.get('/profile', isAuthenticated, getGitHubProfileHandler);
 GitHubRouter.get('/repos', isAuthenticated, getGitHubReposHandler);
 GitHubRouter.delete('/disconnect', isAuthenticated, disconnectGitHubHandler);
+GitHubRouter.post('/webhook', githubWebhookHandler);
 
 export default GitHubRouter;

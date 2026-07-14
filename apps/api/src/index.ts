@@ -21,7 +21,12 @@ app.use(cors({
    },
    credentials: true
 }));
-app.use(express.json());
+app.use(express.json({
+   verify: (req: any, _res, buf) => {
+      // Store raw body for webhook signature verification
+      req.rawBody = buf.toString();
+   },
+}));
 const PORT = process.env.PORT || 3000;
 
 app.get('/health', (req, res) => {
