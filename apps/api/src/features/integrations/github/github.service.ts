@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { Octokit } from '@octokit/rest'
+import { encryptToken, decryptToken, isEncryptedToken } from '../../../shared/crypto.js'
 import jwt, { type JwtPayload } from 'jsonwebtoken'
 import { prisma } from '../../../config/prisma.js'
 import {
@@ -15,6 +16,17 @@ import {
     GITHUB_CLIENT_SECRET,
     GITHUB_OAUTH_STATE_SECRET,
 } from '../../../config/config.js'
+
+/**
+ * Safely get a usable access token from the stored (possibly encrypted) value.
+ */
+function resolveAccessToken(storedToken: string): string {
+    if (isEncryptedToken(storedToken)) {
+        return decryptToken(storedToken);
+    }
+    // Legacy plaintext token — return as-is (will be encrypted on next save)
+    return storedToken;
+}
 
 const githubAuthorizeUrl = 'https://github.com/login/oauth/authorize';
 const githubTokenUrl = 'https://github.com/login/oauth/access_token';
@@ -91,8 +103,9 @@ const mapGitHubRepo = (repo: Awaited<ReturnType<Octokit['repos']['listForAuthent
     updatedAt: repo.updated_at,
 });
 
-const createGitHubClient = (accessToken: string) => {
-    return new Octokit({ auth: accessToken });
+const createGitHubClient = (storedToken: string) => {
+    const token = resolveAccessToken(storedToken);
+    return new Octokit({ auth: token });
 }
 
 const handleGitHubApiError = (error: unknown): never => {
@@ -252,12 +265,14 @@ export const saveGitHubConnection = async (
         connectedAt: new Date().toISOString(),
     };
 
+    const encryptedToken = encryptToken(accessToken);
+
     if (existingIntegration) {
         return prisma.integration.update({
             where: { id: existingIntegration.id },
             data: {
                 accountEmail: profile.email,
-                accessToken,
+                accessToken: encryptedToken,
                 metadata,
             },
             select: integrationSelect,
@@ -269,7 +284,7 @@ export const saveGitHubConnection = async (
             workspaceId,
             provider: GITHUB_PROVIDER,
             accountEmail: profile.email,
-            accessToken,
+            accessToken: encryptedToken,
             metadata,
         },
         select: integrationSelect,
@@ -349,6 +364,32 @@ export const getGitHubRepos = async (userId: string, workspaceId: string) => {
 
 export const disconnectGitHub = async (userId: string, workspaceId: string) => {
     await ensureWorkspaceAccess(userId, workspaceId);
+
+    // Retrieve the integration so we can revoke the token on GitHub's side
+    const integration = await prisma.integration.findFirst({
+        where: { workspaceId, provider: GITHUB_PROVIDER },
+        select: { id: true, accessToken: true },
+        orderBy: { createdAt: 'desc' },
+    });
+
+    if (!integration) return false;
+
+    // Best-effort revoke on GitHub (don't fail disconnect if this errors)
+    try {
+        const plainToken = resolveAccessToken(integration.accessToken);
+        const credentials = Buffer.from(`${GITHUB_CLIENT_ID}:${GITHUB_CLIENT_SECRET}`).toString('base64');
+        await fetch(`https://api.github.com/applications/${GITHUB_CLIENT_ID}/token`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Basic ${credentials}`,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ access_token: plainToken }),
+        });
+    } catch (revokeError) {
+        console.warn('[GitHub] Token revocation failed (non-fatal):', revokeError);
+    }
 
     const deleted = await prisma.integration.deleteMany({
         where: {
