@@ -393,6 +393,12 @@ export function useChat(workspaceId: string | undefined) {
     setIsStreaming(false);
   }, []);
 
+  const stopStreaming = useCallback(() => {
+    abortRef.current?.abort();
+    setIsStreaming(false);
+    setMessages(prev => prev.map(m => m.isStreaming ? { ...m, isStreaming: false } : m));
+  }, []);
+
   return {
     conversations,
     activeConversationId,
@@ -406,5 +412,6 @@ export function useChat(workspaceId: string | undefined) {
     deleteConversation,
     sendMessage,
     startNewConversation,
+    stopStreaming,
   };
 }

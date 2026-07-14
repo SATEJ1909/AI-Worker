@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   Bot, Send, Plus, Trash2, MessageSquare, ChevronRight,
-  Loader2, Sparkles, X, Menu
+  Loader2, Sparkles, X, Menu, Square, ArrowUpRight, Terminal, GitBranch
 } from 'lucide-react';
 import { useWorkspace } from '@/context/workspace-context';
 import { useChat, type Conversation } from '@/hooks/use-chat';
@@ -19,6 +19,19 @@ function formatRelative(dateStr: string): string {
   if (diff < 3600_000) return `${Math.floor(diff / 60_000)}m ago`;
   if (diff < 86_400_000) return `${Math.floor(diff / 3600_000)}h ago`;
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function getConversationGroup(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (date.toDateString() === now.toDateString()) return 'Today';
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  if (diffDays <= 7) return 'Previous 7 Days';
+  return 'Older';
 }
 
 // ─── Conversation sidebar item ───────────────────────────────────────────────
@@ -38,26 +51,27 @@ function ConversationItem({
 
   return (
     <div
-      className={`group relative flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors duration-150 ${
+      className={`group relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${
         isActive
-          ? 'bg-white/[0.06] text-foreground'
-          : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
+          ? 'bg-white/[0.08] text-foreground font-medium shadow-sm border border-white/[0.06]'
+          : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
       }`}
       onClick={onSelect}
       onMouseEnter={() => setShowDelete(true)}
       onMouseLeave={() => setShowDelete(false)}
     >
-      <MessageSquare className="w-3.5 h-3.5 shrink-0 opacity-60" />
-      <span className="flex-1 text-xs truncate font-medium">
+      <MessageSquare className={`w-3.5 h-3.5 shrink-0 transition-colors ${isActive ? 'text-emerald-400' : 'opacity-60 group-hover:opacity-100'}`} />
+      <span className="flex-1 text-xs truncate">
         {conv.title ?? 'New conversation'}
       </span>
-      <span className="text-[10px] opacity-40 shrink-0 hidden group-hover:block">
+      <span className="text-[10px] opacity-40 shrink-0 hidden group-hover:block transition-opacity">
         {formatRelative(conv.updatedAt)}
       </span>
       {showDelete && (
         <button
           onClick={e => { e.stopPropagation(); onDelete(); }}
-          className="shrink-0 p-0.5 rounded text-muted-foreground hover:text-red-400 transition-colors"
+          className="shrink-0 p-1 rounded-md text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          title="Delete chat"
         >
           <Trash2 className="w-3 h-3" />
         </button>
@@ -70,14 +84,15 @@ function ConversationItem({
 
 function TypingIndicator() {
   return (
-    <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-full bg-foreground/10 border border-foreground/10 flex items-center justify-center shrink-0 text-xs font-bold text-muted-foreground">
-        AI
+    <div className="flex gap-3.5 animate-in fade-in duration-300">
+      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 shadow-sm">
+        <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
       </div>
-      <div className="surface px-4 py-3 rounded-2xl rounded-tl-sm flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:0ms]" />
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:150ms]" />
-        <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:300ms]" />
+      <div className="bg-card/70 border border-border/80 px-4 py-3.5 rounded-2xl rounded-tl-sm flex items-center gap-2 shadow-sm backdrop-blur-md">
+        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:0ms]" />
+        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:150ms]" />
+        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:300ms]" />
+        <span className="text-xs text-muted-foreground ml-1 font-mono">TaskMind AI is working…</span>
       </div>
     </div>
   );
@@ -87,35 +102,67 @@ function TypingIndicator() {
 
 function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
   const prompts = [
-    'List all my GitHub repositories',
-    'Search for "useState" across my repos',
-    'Show me the README from my latest repo',
-    'Create a bug report issue in a repository',
+    {
+      title: 'List my GitHub repositories',
+      desc: 'Retrieve all accessible repositories & recent updates',
+      icon: <GitBranch className="w-4 h-4 text-emerald-400" />,
+      prompt: 'List all my GitHub repositories and show their latest push date and stars',
+    },
+    {
+      title: 'Fetch & analyze latest README',
+      desc: 'Read documentation from your most recent repo',
+      icon: <Terminal className="w-4 h-4 text-teal-400" />,
+      prompt: 'Find my most recently pushed GitHub repository and retrieve its README.md file',
+    },
+    {
+      title: 'Search code across repos',
+      desc: 'Look for specific functions, exports, or hooks',
+      icon: <Sparkles className="w-4 h-4 text-amber-400" />,
+      prompt: 'Search across my repositories for where we define or export important services',
+    },
+    {
+      title: 'Explain project architecture',
+      desc: 'Ask about full-stack integration and tools',
+      icon: <ArrowUpRight className="w-4 h-4 text-blue-400" />,
+      prompt: 'Explain how the tools, integrations, and agent loop work together in this workspace',
+    },
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center animate-in fade-in duration-500">
+    <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center animate-in fade-in duration-500 max-w-2xl mx-auto py-12">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-16 h-16 rounded-2xl bg-foreground/5 border border-border flex items-center justify-center animate-float">
-          <Sparkles className="w-8 h-8 text-muted-foreground" />
+        <div className="relative">
+          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 opacity-20 blur-lg animate-pulse" />
+          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-card to-background border border-white/10 flex items-center justify-center shadow-xl">
+            <Sparkles className="w-8 h-8 text-emerald-400" />
+          </div>
         </div>
         <div>
-          <h2 className="text-xl font-bold font-[family-name:var(--font-sora)]">TaskMind Agent</h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-xs">
-            I can interact with your connected tools. Ask me to do something.
+          <h2 className="text-2xl font-bold font-[family-name:var(--font-sora)] text-foreground">TaskMind Agent</h2>
+          <p className="text-sm text-muted-foreground mt-1 max-w-md">
+            I am your agentic coding & workflow assistant. Connected directly to your active workspace tools and integrations.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
         {prompts.map(p => (
           <button
-            key={p}
-            onClick={() => onPromptClick(p)}
-            className="text-left px-4 py-3 rounded-lg border border-border hover:bg-white/[0.03] transition-colors duration-150 text-xs text-muted-foreground hover:text-foreground group"
+            key={p.title}
+            onClick={() => onPromptClick(p.prompt)}
+            className="text-left p-3.5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/15 transition-all duration-200 group flex flex-col justify-between h-24 shadow-sm"
           >
-            <span className="text-foreground/40 group-hover:text-foreground/60 mr-1.5">›</span>
-            {p}
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-semibold text-xs text-foreground/90 group-hover:text-emerald-400 transition-colors">
+                {p.title}
+              </span>
+              <span className="p-1 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/10 transition-colors">
+                {p.icon}
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
+              {p.desc}
+            </p>
           </button>
         ))}
       </div>
@@ -141,6 +188,7 @@ export default function ChatPage() {
     deleteConversation,
     sendMessage,
     startNewConversation,
+    stopStreaming,
   } = useChat(workspaceId);
 
   const [input, setInput] = useState('');
@@ -188,14 +236,35 @@ export default function ChatPage() {
     }
   };
 
+  // Group conversations by date
+  const groupedConversations = useMemo(() => {
+    const groups: { [key: string]: Conversation[] } = {};
+    const order = ['Today', 'Yesterday', 'Previous 7 Days', 'Older'];
+
+    conversations.forEach(conv => {
+      const group = getConversationGroup(conv.updatedAt);
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(conv);
+    });
+
+    return order
+      .map(groupName => ({
+        groupName,
+        items: groups[groupName] || [],
+      }))
+      .filter(g => g.items.length > 0);
+  }, [conversations]);
+
   // ── No workspace selected ─────────────────────────────────────────────────
   if (!workspaceId) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center gap-4">
-        <Bot className="w-12 h-12 text-muted-foreground" />
-        <h2 className="text-lg font-semibold">No workspace selected</h2>
-        <p className="text-sm text-muted-foreground max-w-xs">
-          Select or create a workspace to start chatting with the AI agent.
+      <div className="flex flex-col items-center justify-center h-full text-center gap-4 bg-background">
+        <div className="w-16 h-16 rounded-2xl bg-card border border-border flex items-center justify-center shadow-lg">
+          <Bot className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <h2 className="text-xl font-bold font-[family-name:var(--font-sora)]">No workspace selected</h2>
+        <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+          Select or create a workspace from the sidebar to start chatting with the TaskMind AI agent.
         </p>
       </div>
     );
@@ -208,40 +277,58 @@ export default function ChatPage() {
     <div className="flex h-full overflow-hidden bg-background">
 
       {/* ── Sidebar ───────────────────────────────────────────────────────── */}
-      <div className={`flex flex-col shrink-0 border-r border-border bg-card/30 backdrop-blur-sm transition-all duration-300 overflow-hidden ${
-        sidebarOpen ? 'w-60' : 'w-0'
+      <div className={`flex flex-col shrink-0 border-r border-border bg-card/30 backdrop-blur-xl transition-all duration-300 overflow-hidden ${
+        sidebarOpen ? 'w-64' : 'w-0'
       }`}>
-        <div className="p-3 border-b border-border flex items-center justify-between min-w-[240px]">
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Conversations</span>
+        <div className="p-3 border-b border-border flex items-center justify-between min-w-[256px]">
+          <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.15em] flex items-center gap-1.5">
+            <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+            History ({conversations.length})
+          </span>
           <button
             onClick={startNewConversation}
-            className="p-1.5 rounded-lg hover:bg-secondary transition-all duration-200 text-muted-foreground hover:text-foreground"
+            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.1] transition-all duration-200 text-muted-foreground hover:text-foreground border border-white/5"
             title="New conversation"
           >
             <Plus className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-2 space-y-0.5 min-w-[240px]">
+        <div className="flex-1 overflow-y-auto p-2.5 space-y-4 min-w-[256px]">
           {isLoadingConversations ? (
-            <div className="space-y-1.5 p-2">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="skeleton h-8 rounded-lg" style={{ opacity: 1 - i * 0.2 }} />
+            <div className="space-y-2 p-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="skeleton h-9 rounded-xl bg-white/[0.04]" style={{ opacity: 1 - i * 0.18 }} />
               ))}
             </div>
           ) : conversations.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-8 px-2">
-              No conversations yet. Send a message to start one.
-            </p>
+            <div className="text-center py-10 px-4 space-y-2">
+              <Sparkles className="w-5 h-5 text-muted-foreground/40 mx-auto" />
+              <p className="text-xs text-muted-foreground font-medium">
+                No history yet
+              </p>
+              <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
+                Send a message or pick a suggestion to start an AI session.
+              </p>
+            </div>
           ) : (
-            conversations.map(conv => (
-              <ConversationItem
-                key={conv.id}
-                conv={conv}
-                isActive={conv.id === activeConversationId}
-                onSelect={() => loadConversation(conv.id)}
-                onDelete={() => deleteConversation(conv.id)}
-              />
+            groupedConversations.map(group => (
+              <div key={group.groupName} className="space-y-1">
+                <div className="px-3 py-1 text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider">
+                  {group.groupName}
+                </div>
+                <div className="space-y-0.5">
+                  {group.items.map(conv => (
+                    <ConversationItem
+                      key={conv.id}
+                      conv={conv}
+                      isActive={conv.id === activeConversationId}
+                      onSelect={() => loadConversation(conv.id)}
+                      onDelete={() => deleteConversation(conv.id)}
+                    />
+                  ))}
+                </div>
+              </div>
             ))
           )}
         </div>
@@ -256,47 +343,56 @@ export default function ChatPage() {
             <button
               onClick={() => setSidebarOpen(v => !v)}
               className="p-1.5 rounded-lg hover:bg-secondary transition-all duration-200 text-muted-foreground hover:text-foreground"
+              title={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
             >
               <Menu className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-foreground/5 border border-border flex items-center justify-center">
-                <Bot className="w-4 h-4 text-muted-foreground" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/20 flex items-center justify-center shadow-sm">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <h1 className="text-sm font-bold leading-none">TaskMind</h1>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="text-[10px] text-muted-foreground">
-                    {activeWorkspace.name}
+                <div className="flex items-center gap-2">
+                  <h1 className="text-sm font-bold leading-none text-foreground">TaskMind AI</h1>
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-mono hidden sm:inline-block">
+                    Nemotron 120B
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[11px] text-muted-foreground truncate max-w-[180px]">
+                    Workspace: <strong className="text-foreground/80">{activeWorkspace.name}</strong>
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {activeConversationId && (
-            <button
-              onClick={startNewConversation}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-secondary transition-all duration-200 border border-transparent hover:border-border"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              New chat
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {activeConversationId && (
+              <button
+                onClick={startNewConversation}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-200 border border-white/5 shadow-sm font-medium"
+              >
+                <Plus className="w-3.5 h-3.5 text-emerald-400" />
+                New chat
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto">
           {isLoadingMessages ? (
-            <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+              <Loader2 className="w-6 h-6 animate-spin text-emerald-400" />
+              <span className="text-xs font-medium">Loading session history…</span>
             </div>
           ) : !showMessages ? (
             <EmptyState onPromptClick={p => handleSend(p)} />
           ) : (
-            <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+            <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
               {messages.map(msg => (
                 <MessageBubble key={msg.id} message={msg} />
               ))}
@@ -307,35 +403,47 @@ export default function ChatPage() {
         </div>
 
         {/* Input area */}
-        <div className="px-4 pb-4 pt-2 bg-background shrink-0">
-          <div className="max-w-3xl mx-auto">
-            <div className="relative flex items-end gap-2 border border-border rounded-xl p-2 focus-within:ring-1 focus-within:ring-foreground/10 focus-within:border-foreground/15 transition-all duration-150">
+        <div className="px-4 pb-4 pt-2 bg-background shrink-0 border-t border-border/40">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative flex items-end gap-2 border border-white/10 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-500/40 bg-card/40 backdrop-blur-md shadow-lg transition-all duration-200">
               <textarea
                 ref={textareaRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask TaskMind to do anything… (Shift+Enter for new line)"
+                placeholder="Ask TaskMind to inspect repos, write code, or run tasks… (Shift+Enter for new line)"
                 disabled={isStreaming}
                 rows={1}
-                className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none resize-none py-3 px-2 text-sm focus:outline-none placeholder:text-muted-foreground/50 disabled:opacity-50"
+                className="flex-1 max-h-36 min-h-[44px] bg-transparent border-none resize-none py-3 px-2.5 text-sm focus:outline-none placeholder:text-muted-foreground/60 disabled:opacity-50 font-sans leading-relaxed text-foreground"
               />
 
-              <button
-                onClick={() => handleSend()}
-                disabled={!input.trim() || isStreaming}
-                className="shrink-0 p-2.5 rounded-xl bg-foreground text-background hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 mb-0.5"
-              >
-                {isStreaming
-                  ? <Loader2 className="w-4 h-4 animate-spin" />
-                  : <Send className="w-4 h-4" />
-                }
-              </button>
+              {isStreaming ? (
+                <button
+                  onClick={stopStreaming}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200 text-xs font-semibold mb-0.5 shadow-sm"
+                  title="Stop generating"
+                >
+                  <Square className="w-3.5 h-3.5 fill-current" />
+                  <span className="hidden sm:inline">Stop</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleSend()}
+                  disabled={!input.trim()}
+                  className="shrink-0 p-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-background hover:opacity-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 mb-0.5 shadow-md hover:shadow-emerald-500/20"
+                >
+                  <Send className="w-4 h-4 fill-current" />
+                </button>
+              )}
             </div>
 
-            <p className="text-center text-[10px] text-muted-foreground/50 mt-2">
-              TaskMind can use your connected tools. Verify important results.
-            </p>
+            <div className="flex items-center justify-between px-1 mt-2 text-[11px] text-muted-foreground/60">
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Active Workspace: <strong className="text-foreground/70">{activeWorkspace.name}</strong></span>
+              </div>
+              <span>TaskMind can run tools locally or via cloud integrations. Verify code outputs.</span>
+            </div>
           </div>
         </div>
 
