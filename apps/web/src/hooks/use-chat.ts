@@ -56,12 +56,14 @@ function makeId() {
 
 function dbMessagesToChatMessages(msgs: DbMessage[]): ChatMessage[] {
   const result: ChatMessage[] = [];
-  let pending: ChatMessage | null = null;
+  let pendingAssistant: ChatMessage | null = null;
 
   for (const msg of msgs) {
     if (msg.role === 'user') {
-      if (pending) result.push(pending);
-      pending = null;
+      if (pendingAssistant) {
+        result.push(pendingAssistant);
+        pendingAssistant = null;
+      }
       result.push({
         id: msg.id,
         role: 'user',
@@ -69,43 +71,74 @@ function dbMessagesToChatMessages(msgs: DbMessage[]): ChatMessage[] {
         createdAt: new Date(msg.createdAt),
       });
     } else if (msg.role === 'assistant') {
-      if (pending) result.push(pending);
-      pending = {
-        id: msg.id,
-        role: 'assistant',
-        content: msg.content,
-        toolCalls: [],
-        createdAt: new Date(msg.createdAt),
-      };
+      if (!pendingAssistant) {
+        pendingAssistant = {
+          id: msg.id,
+          role: 'assistant',
+          content: msg.content,
+          toolCalls: [],
+          createdAt: new Date(msg.createdAt),
+        };
+      } else {
+        pendingAssistant.content = (pendingAssistant.content ? pendingAssistant.content + '\n\n' : '') + msg.content;
+      }
     } else if (msg.role === 'tool_call') {
-      // Attach to the most recent assistant message
-      const toolCallsRaw = msg.toolCalls as Array<{ name: string; args: Record<string, unknown> }> | null;
-      if (pending && toolCallsRaw) {
+      if (!pendingAssistant) {
+        pendingAssistant = {
+          id: msg.id,
+          role: 'assistant',
+          content: '',
+          toolCalls: [],
+          createdAt: new Date(msg.createdAt),
+        };
+      }
+      const toolCallsRaw = msg.toolCalls as Array<{ id?: string; name: string; args: Record<string, unknown> }> | null;
+      if (toolCallsRaw) {
         for (const tc of toolCallsRaw) {
-          pending.toolCalls = pending.toolCalls ?? [];
-          pending.toolCalls.push({
-            id: makeId(),
+          pendingAssistant.toolCalls = pendingAssistant.toolCalls ?? [];
+          pendingAssistant.toolCalls.push({
+            id: tc.id || makeId(),
             toolName: tc.name,
-            input: tc.args,
+            input: tc.args || {},
             status: 'running',
           });
         }
       }
     } else if (msg.role === 'tool_result') {
-      const toolCallsRaw = msg.toolCalls as Array<{ name: string; result: { success: boolean; data?: unknown; error?: string } }> | null;
-      if (pending && toolCallsRaw) {
+      if (!pendingAssistant) {
+        pendingAssistant = {
+          id: msg.id,
+          role: 'assistant',
+          content: '',
+          toolCalls: [],
+          createdAt: new Date(msg.createdAt),
+        };
+      }
+      const toolCallsRaw = msg.toolCalls as Array<{ id?: string; name: string; result: { success: boolean; data?: unknown; error?: string } }> | null;
+      if (toolCallsRaw) {
         for (const tc of toolCallsRaw) {
-          const existing = pending.toolCalls?.find(c => c.toolName === tc.name && c.status === 'running');
+          pendingAssistant.toolCalls = pendingAssistant.toolCalls ?? [];
+          const existing = pendingAssistant.toolCalls.find(c => (tc.id && c.id === tc.id) || (c.toolName === tc.name && c.status === 'running'));
           if (existing) {
             existing.result = tc.result;
             existing.status = tc.result.success ? 'success' : 'error';
+          } else {
+            pendingAssistant.toolCalls.push({
+              id: tc.id || makeId(),
+              toolName: tc.name,
+              input: {},
+              result: tc.result,
+              status: tc.result?.success ? 'success' : 'error',
+            });
           }
         }
       }
     }
   }
 
-  if (pending) result.push(pending);
+  if (pendingAssistant) {
+    result.push(pendingAssistant);
+  }
   return result;
 }
 
