@@ -254,21 +254,21 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <div className={`flex gap-3.5 group ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
       {/* Avatar */}
       <div
-        className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform duration-200 group-hover:scale-105 ${
+        className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border shadow-md transition-all duration-200 group-hover:scale-105 ${
           isUser
-            ? 'bg-gradient-to-br from-white/15 to-white/5 border-white/10 text-foreground/80'
-            : 'bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border-emerald-500/20 text-emerald-400'
+            ? 'bg-gradient-to-br from-white/15 to-white/5 border-white/10 text-foreground/90'
+            : 'bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border-emerald-500/30 text-emerald-400 shadow-emerald-500/5'
         }`}
       >
         {isUser ? <UserIcon className="w-4 h-4" /> : <Sparkles className="w-4 h-4 animate-pulse" />}
       </div>
 
       {/* Content Area */}
-      <div className={`flex flex-col gap-2.5 max-w-[85%] min-w-0 ${isUser ? 'items-end' : 'items-start'}`}>
+      <div className={`flex flex-col gap-2 max-w-[88%] min-w-0 ${isUser ? 'items-end' : 'items-start w-full'}`}>
         
         {/* Tool Call Cards (rendered before assistant text) */}
         {!isUser && message.toolCalls && message.toolCalls.length > 0 && (
-          <div className="w-full flex flex-col gap-1.5">
+          <div className="w-full flex flex-col gap-1.5 my-0.5">
             {message.toolCalls.map(tc => (
               <ToolCallCard key={tc.id} tool={tc} />
             ))}
@@ -278,19 +278,20 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Text Bubble */}
         {(message.content || message.isStreaming) && (
           <div
-            className={`rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm transition-all duration-200 ${
+            className={`rounded-2xl px-4 py-3.5 text-sm leading-relaxed shadow-lg transition-all duration-200 ${
               isUser
-                ? 'bg-white/[0.08] border border-white/10 text-foreground rounded-tr-sm hover:border-white/15'
-                : 'bg-card/70 border border-border/80 text-foreground rounded-tl-sm backdrop-blur-md hover:border-border'
+                ? 'bg-gradient-to-br from-white/[0.1] to-white/[0.06] border border-white/15 text-foreground rounded-tr-sm'
+                : 'w-full bg-card/80 border border-white/10 text-foreground rounded-tl-sm backdrop-blur-xl hover:border-white/15 shadow-black/30'
             }`}
           >
             {message.content ? (
-              <div className="space-y-1 text-[13.5px]">
+              <div className="space-y-1 text-[13.5px] font-sans">
                 {renderMarkdown(message.content)}
               </div>
             ) : message.isStreaming ? (
               <span className="inline-flex items-center gap-2 text-muted-foreground italic text-xs py-1">
-                Thinking and planning…
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                Thinking and executing tasks…
               </span>
             ) : null}
           </div>

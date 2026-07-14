@@ -104,27 +104,27 @@ function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
   const prompts = [
     {
       title: 'List my GitHub repositories',
-      desc: 'Retrieve all accessible repositories & recent updates',
+      desc: 'Retrieve all accessible repositories, stars, and access levels',
       icon: <GitBranch className="w-4 h-4 text-emerald-400" />,
-      prompt: 'List all my GitHub repositories and show their latest push date and stars',
+      prompt: 'List all my GitHub repositories and show their stars, update dates, and visibility.',
     },
     {
-      title: 'Fetch & analyze latest README',
-      desc: 'Read documentation from your most recent repo',
+      title: 'Check Pull Requests & Branches',
+      desc: 'Inspect open PR flow, drafts, and protected branches',
       icon: <Terminal className="w-4 h-4 text-teal-400" />,
-      prompt: 'Find my most recently pushed GitHub repository and retrieve its README.md file',
+      prompt: 'List all open pull requests and show the branch protection status across my repos.',
     },
     {
-      title: 'Search code across repos',
-      desc: 'Look for specific functions, exports, or hooks',
+      title: 'Review Recent Issues',
+      desc: 'Look up open issues, label tags, and comment activity',
       icon: <Sparkles className="w-4 h-4 text-amber-400" />,
-      prompt: 'Search across my repositories for where we define or export important services',
+      prompt: 'Check for open issues across my GitHub repositories and summarize their status.',
     },
     {
-      title: 'Explain project architecture',
-      desc: 'Ask about full-stack integration and tools',
+      title: 'Inspect & Analyze Code Files',
+      desc: 'Fetch README or source code directly from GitHub',
       icon: <ArrowUpRight className="w-4 h-4 text-blue-400" />,
-      prompt: 'Explain how the tools, integrations, and agent loop work together in this workspace',
+      prompt: 'Find my most recently pushed GitHub repository and inspect its README.md file.',
     },
   ];
 
@@ -132,35 +132,35 @@ function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
     <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center animate-in fade-in duration-500 max-w-2xl mx-auto py-12">
       <div className="flex flex-col items-center gap-4">
         <div className="relative">
-          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 opacity-20 blur-lg animate-pulse" />
-          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-card to-background border border-white/10 flex items-center justify-center shadow-xl">
+          <div className="absolute -inset-2 rounded-3xl bg-gradient-to-r from-emerald-500/30 to-teal-500/30 blur-xl animate-pulse" />
+          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-card to-background border border-white/15 flex items-center justify-center shadow-2xl">
             <Sparkles className="w-8 h-8 text-emerald-400" />
           </div>
         </div>
         <div>
-          <h2 className="text-2xl font-bold font-[family-name:var(--font-sora)] text-foreground">TaskMind Agent</h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-md">
-            I am your agentic coding & workflow assistant. Connected directly to your active workspace tools and integrations.
+          <h2 className="text-2xl font-bold font-[family-name:var(--font-sora)] text-foreground tracking-tight">TaskMind AI Agent</h2>
+          <p className="text-sm text-muted-foreground mt-1.5 max-w-md leading-relaxed">
+            Your autonomous engineering assistant. Powered by Nemotron 120B and connected directly to your GitHub workspace.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full">
         {prompts.map(p => (
           <button
             key={p.title}
             onClick={() => onPromptClick(p.prompt)}
-            className="text-left p-3.5 rounded-xl border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/15 transition-all duration-200 group flex flex-col justify-between h-24 shadow-sm"
+            className="text-left p-4 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-white/[0.01] hover:bg-white/[0.08] hover:border-emerald-500/30 transition-all duration-200 group flex flex-col justify-between h-28 shadow-lg hover:shadow-emerald-500/5 cursor-pointer"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="font-semibold text-xs text-foreground/90 group-hover:text-emerald-400 transition-colors">
+              <span className="font-semibold text-xs text-foreground/95 group-hover:text-emerald-400 transition-colors font-sans">
                 {p.title}
               </span>
-              <span className="p-1 rounded-lg bg-white/[0.05] group-hover:bg-emerald-500/10 transition-colors">
+              <span className="p-1.5 rounded-xl bg-white/[0.06] group-hover:bg-emerald-500/15 transition-colors shadow-inner">
                 {p.icon}
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground/80 line-clamp-2 leading-relaxed">
+            <p className="text-[11.5px] text-muted-foreground/85 line-clamp-2 leading-relaxed font-sans">
               {p.desc}
             </p>
           </button>
@@ -273,8 +273,15 @@ export default function ChatPage() {
   const showMessages = messages.length > 0;
   const showTyping = isStreaming && messages.length > 0 && messages[messages.length - 1].role !== 'assistant';
 
+  const quickChips = [
+    { label: '⚡ List Repos', prompt: 'List my GitHub repositories with stars and protection details.' },
+    { label: '🐛 Open Issues', prompt: 'Find all open issues across my repositories and show labels.' },
+    { label: '🔀 Check PRs', prompt: 'Check open pull requests and summarize branch flow.' },
+    { label: '🌿 Branches', prompt: 'List branches and check branch protection rules.' },
+  ];
+
   return (
-    <div className="flex h-full overflow-hidden bg-background">
+    <div className="flex flex-1 h-full overflow-hidden bg-background">
 
       {/* ── Sidebar ───────────────────────────────────────────────────────── */}
       <div className={`flex flex-col shrink-0 border-r border-border bg-card/30 backdrop-blur-xl transition-all duration-300 overflow-hidden ${
@@ -335,7 +342,7 @@ export default function ChatPage() {
       </div>
 
       {/* ── Main chat area ────────────────────────────────────────────────── */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
 
         {/* Header */}
         <div className="h-14 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-10">
@@ -354,15 +361,15 @@ export default function ChatPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-sm font-bold leading-none text-foreground">TaskMind AI</h1>
-                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-mono hidden sm:inline-block">
+                  <h1 className="text-sm font-bold leading-none text-foreground font-[family-name:var(--font-sora)]">TaskMind AI</h1>
+                  <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline-block">
                     Nemotron 120B
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] text-muted-foreground truncate max-w-[180px]">
-                    Workspace: <strong className="text-foreground/80">{activeWorkspace.name}</strong>
+                  <span className="text-[11px] text-muted-foreground truncate max-w-[200px]">
+                    Workspace: <strong className="text-foreground/90 font-medium">{activeWorkspace.name}</strong>
                   </span>
                 </div>
               </div>
@@ -373,10 +380,10 @@ export default function ChatPage() {
             {activeConversationId && (
               <button
                 onClick={startNewConversation}
-                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-200 border border-white/5 shadow-sm font-medium"
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-200 border border-white/10 shadow-sm font-medium cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 text-emerald-400" />
-                New chat
+                New session
               </button>
             )}
           </div>
@@ -402,25 +409,44 @@ export default function ChatPage() {
           )}
         </div>
 
-        {/* Input area */}
+        {/* Input area & Quick Action Chips */}
         <div className="px-4 pb-4 pt-2 bg-background shrink-0 border-t border-border/40">
-          <div className="max-w-4xl mx-auto">
-            <div className="relative flex items-end gap-2 border border-white/10 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-500/40 bg-card/40 backdrop-blur-md shadow-lg transition-all duration-200">
+          <div className="max-w-4xl mx-auto flex flex-col gap-2">
+            {/* Quick action chips bar */}
+            {showMessages && !isStreaming && (
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                <span className="text-[10px] text-muted-foreground/60 font-semibold uppercase tracking-wider mr-1 shrink-0">
+                  Quick Actions:
+                </span>
+                {quickChips.map((chip, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSend(chip.prompt)}
+                    className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-emerald-500/15 text-muted-foreground hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all font-sans cursor-pointer shadow-sm"
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Input box */}
+            <div className="relative flex items-end gap-2 border border-white/15 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-emerald-500/30 focus-within:border-emerald-500/50 bg-card/60 backdrop-blur-xl shadow-xl transition-all duration-200">
               <textarea
                 ref={textareaRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask TaskMind to inspect repos, write code, or run tasks… (Shift+Enter for new line)"
+                placeholder="Ask TaskMind to inspect repos, analyze issues, write code, or run tasks… (Shift+Enter for new line)"
                 disabled={isStreaming}
                 rows={1}
-                className="flex-1 max-h-36 min-h-[44px] bg-transparent border-none resize-none py-3 px-2.5 text-sm focus:outline-none placeholder:text-muted-foreground/60 disabled:opacity-50 font-sans leading-relaxed text-foreground"
+                className="flex-1 max-h-36 min-h-[44px] bg-transparent border-none resize-none py-3 px-3 text-sm focus:outline-none placeholder:text-muted-foreground/60 disabled:opacity-50 font-sans leading-relaxed text-foreground"
               />
 
               {isStreaming ? (
                 <button
                   onClick={stopStreaming}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200 text-xs font-semibold mb-0.5 shadow-sm"
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200 text-xs font-semibold mb-0.5 shadow-sm cursor-pointer"
                   title="Stop generating"
                 >
                   <Square className="w-3.5 h-3.5 fill-current" />
@@ -430,19 +456,19 @@ export default function ChatPage() {
                 <button
                   onClick={() => handleSend()}
                   disabled={!input.trim()}
-                  className="shrink-0 p-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-background hover:opacity-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 mb-0.5 shadow-md hover:shadow-emerald-500/20"
+                  className="shrink-0 p-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-background hover:opacity-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 mb-0.5 shadow-md hover:shadow-emerald-500/20 cursor-pointer"
                 >
                   <Send className="w-4 h-4 fill-current" />
                 </button>
               )}
             </div>
 
-            <div className="flex items-center justify-between px-1 mt-2 text-[11px] text-muted-foreground/60">
+            <div className="flex items-center justify-between px-1 mt-1 text-[11px] text-muted-foreground/60 font-sans">
               <div className="flex items-center gap-2">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                <span>Active Workspace: <strong className="text-foreground/70">{activeWorkspace.name}</strong></span>
+                <span>Connected Workspace: <strong className="text-foreground/80">{activeWorkspace.name}</strong></span>
               </div>
-              <span>TaskMind can run tools locally or via cloud integrations. Verify code outputs.</span>
+              <span>TaskMind can execute tools against remote APIs. Verify code outputs.</span>
             </div>
           </div>
         </div>
