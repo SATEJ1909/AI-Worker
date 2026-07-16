@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   Bot, Send, Plus, Trash2, MessageSquare, ChevronRight,
-  Loader2, Sparkles, X, Menu, Square, ArrowUpRight, Terminal, GitBranch
+  Loader2, Sparkles, X, Menu, Square, ArrowUpRight, Terminal, GitBranch,
+  Mail, Calendar
 } from 'lucide-react';
 import { useWorkspace } from '@/context/workspace-context';
 import { useChat, type Conversation } from '@/hooks/use-chat';
@@ -100,33 +101,72 @@ function TypingIndicator() {
 
 // ─── Empty state ─────────────────────────────────────────────────────────────
 
-function EmptyState({ onPromptClick }: { onPromptClick: (p: string) => void }) {
-  const prompts = [
-    {
-      title: 'List my GitHub repositories',
-      desc: 'Retrieve all accessible repositories, stars, and access levels',
-      icon: <GitBranch className="w-4 h-4 text-emerald-400" />,
-      prompt: 'List all my GitHub repositories and show their stars, update dates, and visibility.',
-    },
-    {
-      title: 'Check Pull Requests & Branches',
-      desc: 'Inspect open PR flow, drafts, and protected branches',
-      icon: <Terminal className="w-4 h-4 text-teal-400" />,
-      prompt: 'List all open pull requests and show the branch protection status across my repos.',
-    },
-    {
+function EmptyState({ onPromptClick, connectedProviders }: { onPromptClick: (p: string) => void, connectedProviders: string[] }) {
+  let prompts = [];
+
+  if (connectedProviders.includes('github')) {
+    prompts.push(
+      {
+        title: 'List my GitHub repositories',
+        desc: 'Retrieve all accessible repositories, stars, and access levels',
+        icon: <GitBranch className="w-4 h-4 text-emerald-400" />,
+        prompt: 'List all my GitHub repositories and show their stars, update dates, and visibility.',
+      },
+      {
+        title: 'Check Pull Requests & Branches',
+        desc: 'Inspect open PR flow, drafts, and protected branches',
+        icon: <Terminal className="w-4 h-4 text-teal-400" />,
+        prompt: 'List all open pull requests and show the branch protection status across my repos.',
+      }
+    );
+  }
+
+  if (connectedProviders.includes('google')) {
+    prompts.push(
+      {
+        title: 'Read Recent Emails',
+        desc: 'Check your Gmail inbox for new messages',
+        icon: <Mail className="w-4 h-4 text-rose-400" />,
+        prompt: 'Check my Gmail for recent emails and summarize the unread ones.',
+      },
+      {
+        title: 'Check My Schedule',
+        desc: 'View upcoming calendar events and meetings',
+        icon: <Calendar className="w-4 h-4 text-blue-400" />,
+        prompt: 'What are my upcoming calendar events for today?',
+      }
+    );
+  }
+
+  // Fallbacks if not enough prompts
+  if (prompts.length < 4 && connectedProviders.includes('github')) {
+    prompts.push({
       title: 'Review Recent Issues',
       desc: 'Look up open issues, label tags, and comment activity',
       icon: <Sparkles className="w-4 h-4 text-amber-400" />,
       prompt: 'Check for open issues across my GitHub repositories and summarize their status.',
-    },
-    {
-      title: 'Inspect & Analyze Code Files',
-      desc: 'Fetch README or source code directly from GitHub',
-      icon: <ArrowUpRight className="w-4 h-4 text-blue-400" />,
-      prompt: 'Find my most recently pushed GitHub repository and inspect its README.md file.',
-    },
-  ];
+    });
+  }
+  
+  if (prompts.length === 0) {
+    prompts = [
+      {
+        title: 'Ask a general question',
+        desc: 'Chat with the AI about any topic',
+        icon: <MessageSquare className="w-4 h-4 text-emerald-400" />,
+        prompt: 'What can you help me with today?',
+      },
+      {
+        title: 'Brainstorm ideas',
+        desc: 'Get creative suggestions and ideas',
+        icon: <Sparkles className="w-4 h-4 text-amber-400" />,
+        prompt: 'Help me brainstorm some ideas for a new project.',
+      }
+    ];
+  }
+
+  // Slice to max 4 to fit the grid perfectly
+  prompts = prompts.slice(0, 4);
 
   return (
     <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center animate-in fade-in duration-500 max-w-2xl mx-auto py-12">
@@ -272,13 +312,25 @@ export default function ChatPage() {
 
   const showMessages = messages.length > 0;
   const showTyping = isStreaming && messages.length > 0 && messages[messages.length - 1].role !== 'assistant';
+  
+  const connectedProviders = activeWorkspace?.integrations?.map((i: { provider: string }) => i.provider) || [];
 
-  const quickChips = [
-    { label: '⚡ List Repos', prompt: 'List my GitHub repositories with stars and protection details.' },
-    { label: '🐛 Open Issues', prompt: 'Find all open issues across my repositories and show labels.' },
-    { label: '🔀 Check PRs', prompt: 'Check open pull requests and summarize branch flow.' },
-    { label: '🌿 Branches', prompt: 'List branches and check branch protection rules.' },
-  ];
+  const quickChips = [];
+  if (connectedProviders.includes('github')) {
+    quickChips.push(
+      { label: '⚡ List Repos', prompt: 'List my GitHub repositories with stars and protection details.' },
+      { label: '🐛 Open Issues', prompt: 'Find all open issues across my repositories and show labels.' }
+    );
+  }
+  if (connectedProviders.includes('google')) {
+    quickChips.push(
+      { label: '📧 Check Email', prompt: 'Summarize my recent unread emails.' },
+      { label: '📅 Today\'s Events', prompt: 'What is on my calendar for today?' }
+    );
+  }
+  if (quickChips.length === 0) {
+    quickChips.push({ label: '👋 Say Hi', prompt: 'Hello! What can you do?' });
+  }
 
   return (
     <div className="flex flex-1 h-full overflow-hidden bg-background">
@@ -397,7 +449,7 @@ export default function ChatPage() {
               <span className="text-xs font-medium">Loading session history…</span>
             </div>
           ) : !showMessages ? (
-            <EmptyState onPromptClick={p => handleSend(p)} />
+            <EmptyState onPromptClick={p => handleSend(p)} connectedProviders={connectedProviders} />
           ) : (
             <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
               {messages.map(msg => (

@@ -143,6 +143,7 @@ interface LoopParams {
 
 interface ModelLoopParams extends LoopParams {
     model: string;
+    isFallback?: boolean;
 }
 
 // Primary entry — uses OPENROUTER_MODEL constant
@@ -271,7 +272,11 @@ async function* runOpenRouterLoopWithModel(params: ModelLoopParams): AsyncGenera
 
     } catch (error) {
         const errorMsg = error instanceof Error ? error.message : String(error);
-        console.error(`[AgentOrchestrator] OpenRouter error (${OPENROUTER_MODEL}):`, errorMsg);
+        console.error(`[AgentOrchestrator] OpenRouter error (${model}):`, errorMsg);
+
+        if (params.isFallback) {
+            throw error; // Rethrow so the parent loop can catch it and try the next fallback
+        }
 
         // ── Cascade through free-model fallback chain ──────────────────────
         const allFallbacks = [...OPENROUTER_FALLBACK_MODELS];
@@ -287,6 +292,7 @@ async function* runOpenRouterLoopWithModel(params: ModelLoopParams): AsyncGenera
                     userId,
                     workspaceId,
                     conversationId,
+                    isFallback: true,
                 });
                 return; // success — stop cascading
             } catch (fallbackError) {

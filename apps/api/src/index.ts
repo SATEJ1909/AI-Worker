@@ -5,6 +5,7 @@ import { prisma } from './config/prisma.js'
 import UserRouter from './features/users/user.routes.js';
 import WorkspaceRouter from './features/workspace/workspace.routes.js';
 import GitHubRouter from './features/integrations/github/github.routes.js';
+import GoogleRouter from './features/integrations/google/google.routes.js';
 import ChatRouter from './features/chat/chat.routes.js';
 import { registerAllTools } from './features/tools/index.js';
 
@@ -37,6 +38,7 @@ app.use("/api/v1/user", UserRouter);
 app.use("/api/v1/workspaces", WorkspaceRouter);
 app.use("/api/v1/workspaces/:id/chat", ChatRouter);
 app.use("/api/integrations/github", GitHubRouter);
+app.use("/api/integrations/google", GoogleRouter);
 
 async function main() {
    await prisma.$connect();

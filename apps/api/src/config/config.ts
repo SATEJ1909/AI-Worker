@@ -19,4 +19,11 @@ export const GITHUB_OAUTH_STATE_SECRET = process.env.GITHUB_OAUTH_STATE_SECRET |
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 export const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+export const GOOGLE_OAUTH_CALLBACK_URL = process.env.GOOGLE_OAUTH_CALLBACK_URL || process.env.GOOGLE_CALLBACK_URL || '';
+export const GOOGLE_OAUTH_SUCCESS_REDIRECT_URL = process.env.GOOGLE_OAUTH_SUCCESS_REDIRECT_URL || '';
+export const GOOGLE_OAUTH_ERROR_REDIRECT_URL = process.env.GOOGLE_OAUTH_ERROR_REDIRECT_URL || '';
+export const GOOGLE_OAUTH_STATE_SECRET = process.env.GOOGLE_OAUTH_STATE_SECRET || JWT_SECRET;
+
 export default JWT_SECRET;
