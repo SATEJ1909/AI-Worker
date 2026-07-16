@@ -5,7 +5,7 @@
 // encryption call, producing a string in the format:  iv:authTag:ciphertext
 // (all hex-encoded).
 
-import { randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
+import { randomBytes, createCipheriv, createDecipheriv, createHash } from 'node:crypto';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 128 bits
@@ -23,7 +23,6 @@ function deriveKey(secret: string): Buffer {
     }
 
     // Hash arbitrary-length secrets to a fixed 32-byte key
-    const { createHash } = require('node:crypto') as typeof import('node:crypto');
     return createHash('sha256').update(secret).digest();
 }
 
